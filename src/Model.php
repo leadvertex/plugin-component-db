@@ -72,9 +72,14 @@ abstract class Model
         return $this->updatedAt;
     }
 
-    public function getData(): array
+    public function __get($name)
     {
-        return $this->data;
+        return $this->data[$name] ?? null;
+    }
+
+    public function __set($name, $value)
+    {
+        $this->data[$name] = $value;
     }
 
     public function setData(array $data): void
