@@ -10,6 +10,8 @@ namespace Leadvertex\Plugin\Components\Db;
 
 use DateTimeImmutable;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
+use Leadvertex\Plugin\Components\Db\Components\Limit;
+use Leadvertex\Plugin\Components\Db\Components\Sort;
 
 abstract class Model
 {
@@ -80,12 +82,6 @@ abstract class Model
     public function __set($name, $value)
     {
         $this->data[$name] = $value;
-    }
-
-    public function setData(array $data): void
-    {
-        $this->data = $data;
-        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function save(): bool
@@ -166,7 +162,7 @@ abstract class Model
         return static::hydrate($data[0]);
     }
 
-    public static function findMany(string $companyId, string $groupId, array $ids, $sort = null): array
+    public static function findMany(string $companyId, string $groupId, array $ids, Sort $sort = null): array
     {
         $db = Connector::db();
 
@@ -178,7 +174,7 @@ abstract class Model
         ];
 
         if ($sort) {
-            $where['ORDER'] = $sort;
+            $where['ORDER'] = $sort->get();
         }
 
         $data = $db->select(
@@ -192,7 +188,7 @@ abstract class Model
         }, $data);
     }
 
-    public static function findInGroup(string $companyId, string $groupId, $limit = null, $sort = null): array
+    public static function findInGroup(string $companyId, string $groupId, Limit $limit = null, Sort $sort = null): array
     {
         $db = Connector::db();
 
@@ -203,11 +199,11 @@ abstract class Model
         ];
 
         if ($limit) {
-            $where['LIMIT'] = $limit;
+            $where['LIMIT'] = $limit->get();
         }
 
         if ($sort) {
-            $where['ORDER'] = $sort;
+            $where['ORDER'] = $sort->get();
         }
 
         $data = $db->select(
