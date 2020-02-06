@@ -17,32 +17,32 @@ abstract class Model
 {
 
     /** @var string */
-    protected $companyId;
+    private $companyId;
 
     /** @var string */
-    protected $id;
+    private $feature;
 
     /** @var string */
-    protected $groupId;
+    private $id;
 
     /** @var DateTimeImmutable */
-    protected $createdAt;
+    private $createdAt;
 
     /** @var DateTimeImmutable */
-    protected $updatedAt;
+    private $updatedAt;
 
     /** @var array */
-    protected $data = [];
+    private $data = [];
 
     /** @var bool */
     private $isNew;
 
-    private static $select = ['companyId', 'groupId', 'id', 'createdAt', 'updatedAt', 'data'];
+    private static $select = ['companyId', 'feature', 'id', 'createdAt', 'updatedAt', 'data'];
 
-    public function __construct(string $companyId, string $groupId, string $id)
+    public function __construct(string $companyId, string $feature, string $id)
     {
         $this->companyId = $companyId;
-        $this->groupId = $groupId;
+        $this->feature = $feature;
         $this->id = $id;
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
@@ -61,7 +61,7 @@ abstract class Model
 
     public function getGroupId(): string
     {
-        return $this->groupId;
+        return $this->feature;
     }
 
     public function getCreatedAt(): DateTimeImmutable
@@ -82,6 +82,7 @@ abstract class Model
     public function __set($name, $value)
     {
         $this->data[$name] = $value;
+        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function save(): bool
@@ -92,9 +93,8 @@ abstract class Model
             $db->insert(
                 static::tableName(),
                 [
-                    'model' => $this::modelName(),
                     'companyId' => $this->companyId,
-                    'groupId' => $this->groupId,
+                    'feature' => $this->feature,
                     'createdAt' => $this->createdAt->getTimestamp(),
                     'updatedAt' => $this->updatedAt->getTimestamp(),
                     'data' => json_encode($this->data),
@@ -108,9 +108,8 @@ abstract class Model
                     'data' => json_encode($this->data),
                 ],
                 [
-                    'model' => $this::modelName(),
                     'companyId' => $this->companyId,
-                    'groupId' => $this->groupId,
+                    'feature' => $this->feature,
                     'id' => $this->id,
                 ]
             );
@@ -130,9 +129,8 @@ abstract class Model
         $db->delete(
             static::tableName(),
             [
-                'model' => $this::modelName(),
                 'companyId' => $this->companyId,
-                'groupId' => $this->groupId,
+                'feature' => $this->feature,
                 'id' => $this->id,
             ]
         );
@@ -141,16 +139,15 @@ abstract class Model
         return true;
     }
 
-    public static function findOne(string $companyId, string $groupId, string $id): ?self
+    public static function findOne(string $companyId, string $feature, string $id): ?self
     {
         $db = Connector::db();
         $data = $db->select(
             static::tableName(),
             self::$select,
             [
-                'model' => static::modelName(),
                 'companyId' => $companyId,
-                'groupId' => $groupId,
+                'feature' => $feature,
                 'id' => $id,
             ]
         );
@@ -162,14 +159,13 @@ abstract class Model
         return static::hydrate($data[0]);
     }
 
-    public static function findMany(string $companyId, string $groupId, array $ids, Sort $sort = null): array
+    public static function findMany(string $companyId, string $feature, array $ids, Sort $sort = null): array
     {
         $db = Connector::db();
 
         $where = [
-            'model' => static::modelName(),
             'companyId' => $companyId,
-            'groupId' => $groupId,
+            'feature' => $feature,
             'id' => $ids
         ];
 
@@ -188,14 +184,13 @@ abstract class Model
         }, $data);
     }
 
-    public static function findInGroup(string $companyId, string $groupId, Limit $limit = null, Sort $sort = null): array
+    public static function findInGroup(string $companyId, string $feature, Limit $limit = null, Sort $sort = null): array
     {
         $db = Connector::db();
 
         $where = [
-            'model' => static::modelName(),
             'companyId' => $companyId,
-            'groupId' => $groupId,
+            'feature' => $feature,
         ];
 
         if ($limit) {
@@ -221,7 +216,7 @@ abstract class Model
     {
         $model = new static(
             $data['companyId'],
-            $data['groupId'],
+            $data['feature'],
             $data['id']
         );
 
@@ -234,11 +229,6 @@ abstract class Model
     }
 
     protected static function tableName(): string
-    {
-        return 'models';
-    }
-
-    protected static function modelName(): string
     {
         return array_pop(explode('\\', static::class));
     }

@@ -21,10 +21,9 @@ class CreateTableCommand extends Command
     {
         parent::__construct('db:create-table');
         $this->addArgument(
-            'name',
-            InputArgument::OPTIONAL,
-            'Table will be created with passed name',
-            'models'
+            'table',
+            InputArgument::REQUIRED,
+            'Table will be created with passed name'
         );
     }
 
@@ -32,17 +31,13 @@ class CreateTableCommand extends Command
     {
         $db = Connector::db();
         $db->create(
-            $input->getArgument('name'),
+            $input->getArgument('table'),
             [
-                'model' => [
-                    'VARCHAR(255)',
-                    'NOT NULL'
-                ],
                 'companyId' => [
                     'INT',
                     'NOT NULL'
                 ],
-                'groupId' => [
+                'feature' => [
                     'VARCHAR(255)',
                     'NOT NULL'
                 ],
@@ -61,7 +56,7 @@ class CreateTableCommand extends Command
                     'INT',
                     'NOT NULL'
                 ],
-                'PRIMARY KEY (<model>, <companyId>, <groupId>, <id>)'
+                'PRIMARY KEY (<companyId>, <feature>, <id>)'
             ]
         );
         return 0;

@@ -29,41 +29,17 @@ class CreateTableCommandTest extends TestCase
         $db = Connector::db();
         $command = new CreateTableCommand();
         $tester = new CommandTester($command);
-        $tester->execute([]);
+        $tester->execute(['table' => 'models']);
 
         $this->assertSame(["00000", null, null], $db->error());
 
         $db->insert('models', [
-            'model' => '1',
-            'companyId' => '2',
-            'groupId' => '3',
-            'id' => '4',
-            'data' => '5',
-            'createdAt' => '6',
-            'updatedAt' => '7',
-        ]);
-
-        $this->assertSame(["00000", null, null], $db->error());
-    }
-
-    public function testExecuteWithCustomName()
-    {
-        $db = Connector::db();
-
-        $command = new CreateTableCommand();
-        $tester = new CommandTester($command);
-        $tester->execute(['name' => 'hello']);
-
-        $this->assertSame(["00000", null, null], $db->error());
-
-        $db->insert('hello', [
-            'model' => '1',
-            'companyId' => '2',
-            'groupId' => '3',
-            'id' => '4',
-            'data' => '5',
-            'createdAt' => '6',
-            'updatedAt' => '7',
+            'companyId' => '1',
+            'feature' => '2',
+            'id' => '3',
+            'data' => '4',
+            'createdAt' => '5',
+            'updatedAt' => '6',
         ]);
 
         $this->assertSame(["00000", null, null], $db->error());
