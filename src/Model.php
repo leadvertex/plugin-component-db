@@ -235,7 +235,7 @@ abstract class Model
         }, $data);
     }
 
-    public static function findByFuture(
+    public static function findMany(
         string $companyId,
         array $feature = [],
         array $tag_1 = [],
