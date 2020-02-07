@@ -144,6 +144,7 @@ abstract class Model
                 [
                     'companyId' => $this->companyId,
                     'feature' => $this->feature,
+                    'id' => $this->id,
                     'createdAt' => $this->createdAt->getTimestamp(),
                     'updatedAt' => $this->updatedAt->getTimestamp(),
                     'tag_1' => $this->tag_1,
@@ -278,8 +279,8 @@ abstract class Model
     {
         $model = new static(
             $data['companyId'],
-            $data['feature'],
-            $data['id']
+            $data['id'],
+            $data['feature']
         );
 
         $model->createdAt = new DateTimeImmutable("@{$data['createdAt']}");
