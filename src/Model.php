@@ -47,7 +47,7 @@ abstract class Model
     /** @var bool */
     private $isNew;
 
-    private static $select = ['companyId', 'feature', 'id', 'createdAt', 'updatedAt', 'data'];
+    private static $select = ['companyId', 'feature', 'id', 'createdAt', 'updatedAt', 'tag_1', 'tag_2', 'tag_3', 'data'];
 
     public function __construct(string $companyId, string $id = null, string $feature = '')
     {
