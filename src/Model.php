@@ -132,7 +132,6 @@ abstract class Model
     public function __set($name, $value)
     {
         $this->data[$name] = $value;
-        $this->updatedAt = new DateTimeImmutable();
     }
 
     public function save(): bool
