@@ -45,6 +45,15 @@ class CreateTableCommand extends Command
                     'VARCHAR(255)',
                     'NOT NULL'
                 ],
+                'tag_1' => [
+                    'VARCHAR(255)',
+                ],
+                'tag_2' => [
+                    'VARCHAR(255)',
+                ],
+                'tag_3' => [
+                    'VARCHAR(255)',
+                ],
                 'data' => [
                     'TEXT',
                 ],

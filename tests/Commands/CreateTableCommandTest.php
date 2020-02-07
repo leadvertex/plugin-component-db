@@ -37,9 +37,12 @@ class CreateTableCommandTest extends TestCase
             'companyId' => '1',
             'feature' => '2',
             'id' => '3',
-            'data' => '4',
-            'createdAt' => '5',
-            'updatedAt' => '6',
+            'tag_1' => '4',
+            'tag_2' => '5',
+            'tag_3' => '6',
+            'data' => '7',
+            'createdAt' => '8',
+            'updatedAt' => '9',
         ]);
 
         $this->assertSame(["00000", null, null], $db->error());

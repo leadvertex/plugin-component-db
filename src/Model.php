@@ -12,6 +12,7 @@ use DateTimeImmutable;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\Limit;
 use Leadvertex\Plugin\Components\Db\Components\Sort;
+use Ramsey\Uuid\Uuid;
 
 abstract class Model
 {
@@ -31,6 +32,15 @@ abstract class Model
     /** @var DateTimeImmutable */
     private $updatedAt;
 
+    /** @var string */
+    private $tag_1;
+
+    /** @var string */
+    private $tag_2;
+
+    /** @var string */
+    private $tag_3;
+
     /** @var array */
     private $data = [];
 
@@ -39,11 +49,16 @@ abstract class Model
 
     private static $select = ['companyId', 'feature', 'id', 'createdAt', 'updatedAt', 'data'];
 
-    public function __construct(string $companyId, string $feature, string $id)
+    public function __construct(string $companyId, string $id = null, string $feature = '')
     {
         $this->companyId = $companyId;
         $this->feature = $feature;
+
         $this->id = $id;
+        if ($id === '' || is_null($id)) {
+            $this->id = Uuid::uuid4()->toString();
+        }
+
         $this->createdAt = new DateTimeImmutable();
         $this->updatedAt = new DateTimeImmutable();
         $this->isNew = true;
@@ -74,6 +89,41 @@ abstract class Model
         return $this->updatedAt;
     }
 
+    public function setUpdatedAt(DateTimeImmutable $dateTime)
+    {
+        $this->updatedAt = $dateTime;
+    }
+
+    public function getTag1(): string
+    {
+        return $this->tag_1;
+    }
+
+    public function setTag1(string $tag_1): void
+    {
+        $this->tag_1 = $tag_1;
+    }
+
+    public function getTag2(): string
+    {
+        return $this->tag_2;
+    }
+
+    public function setTag2(string $tag_2): void
+    {
+        $this->tag_2 = $tag_2;
+    }
+
+    public function getTag3(): string
+    {
+        return $this->tag_3;
+    }
+
+    public function setTag3(string $tag_3): void
+    {
+        $this->tag_3 = $tag_3;
+    }
+
     public function __get($name)
     {
         return $this->data[$name] ?? null;
@@ -97,6 +147,9 @@ abstract class Model
                     'feature' => $this->feature,
                     'createdAt' => $this->createdAt->getTimestamp(),
                     'updatedAt' => $this->updatedAt->getTimestamp(),
+                    'tag_1' => $this->tag_1,
+                    'tag_2' => $this->tag_2,
+                    'tag_3' => $this->tag_3,
                     'data' => json_encode($this->data),
                 ]
             );
@@ -104,8 +157,11 @@ abstract class Model
             $db->update(
                 static::tableName(),
                 [
-                    'updatedAt' => $this->updatedAt->getTimestamp(),
+                    'tag_1' => $this->tag_1,
+                    'tag_2' => $this->tag_2,
+                    'tag_3' => $this->tag_3,
                     'data' => json_encode($this->data),
+                    'updatedAt' => $this->updatedAt->getTimestamp(),
                 ],
                 [
                     'companyId' => $this->companyId,
@@ -139,7 +195,7 @@ abstract class Model
         return true;
     }
 
-    public static function findOne(string $companyId, string $feature, string $id): ?self
+    public static function findById(string $companyId, string $id, string $feature = ''): ?self
     {
         $db = Connector::db();
         $data = $db->select(
@@ -159,7 +215,7 @@ abstract class Model
         return static::hydrate($data[0]);
     }
 
-    public static function findMany(string $companyId, string $feature, array $ids, Sort $sort = null): array
+    public static function findByIds(string $companyId, array $ids, string $feature = ''): array
     {
         $db = Connector::db();
 
@@ -168,10 +224,6 @@ abstract class Model
             'feature' => $feature,
             'id' => $ids
         ];
-
-        if ($sort) {
-            $where['ORDER'] = $sort->get();
-        }
 
         $data = $db->select(
             static::tableName(),
@@ -184,13 +236,24 @@ abstract class Model
         }, $data);
     }
 
-    public static function findInGroup(string $companyId, string $feature, Limit $limit = null, Sort $sort = null): array
+    public static function findByFuture(
+        string $companyId,
+        array $feature = [],
+        array $tag_1 = [],
+        array $tag_2 = [],
+        array $tag_3 = [],
+        Limit $limit = null,
+        Sort $sort = null
+    ): array
     {
         $db = Connector::db();
 
         $where = [
             'companyId' => $companyId,
             'feature' => $feature,
+            'tag_1' => $tag_1,
+            'tag_2' => $tag_2,
+            'tag_3' => $tag_3,
         ];
 
         if ($limit) {
@@ -220,8 +283,11 @@ abstract class Model
             $data['id']
         );
 
-        $model->createdAt = new DateTimeImmutable($data['createdAt']);
-        $model->updatedAt = new DateTimeImmutable($data['updatedAt']);
+        $model->createdAt = new DateTimeImmutable("@{$data['createdAt']}");
+        $model->updatedAt = new DateTimeImmutable("@{$data['updatedAt']}");
+        $model->tag_1 = $data['tag_1'];
+        $model->tag_2 = $data['tag_2'];
+        $model->tag_3 = $data['tag_3'];
         $model->data = json_decode($data['data'], true);
         $model->isNew = false;
 
