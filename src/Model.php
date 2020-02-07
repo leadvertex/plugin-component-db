@@ -279,8 +279,8 @@ abstract class Model
     {
         $model = new static(
             $data['companyId'],
-            $data['feature'],
-            $data['id']
+            $data['id'],
+            $data['feature']
         );
 
         $model->createdAt = new DateTimeImmutable("@{$data['createdAt']}");
