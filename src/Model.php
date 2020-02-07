@@ -59,7 +59,7 @@ abstract class Model
         return $this->id;
     }
 
-    public function getGroupId(): string
+    public function getFeature(): string
     {
         return $this->feature;
     }
