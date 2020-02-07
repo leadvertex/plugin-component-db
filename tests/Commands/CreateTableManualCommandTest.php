@@ -12,7 +12,7 @@ use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CreateTableCommandTest extends TestCase
+class CreateTableManualCommandTest extends TestCase
 {
 
     public static function setUpBeforeClass(): void
@@ -27,7 +27,7 @@ class CreateTableCommandTest extends TestCase
     public function testExecute()
     {
         $db = Connector::db();
-        $command = new CreateTableCommand();
+        $command = new CreateTableManualCommand();
         $tester = new CommandTester($command);
         $tester->execute(['table' => 'models']);
 

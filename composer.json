@@ -21,7 +21,8 @@
     "ext-sqlite3": "*",
     "catfan/medoo": "^1.7",
     "symfony/console": "^5.0",
-    "ramsey/uuid": "^3.9"
+    "ramsey/uuid": "^3.9",
+    "haydenpierce/class-finder": "^0.4.0"
   },
   "autoload-dev": {
     "psr-4": {

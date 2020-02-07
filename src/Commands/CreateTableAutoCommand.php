@@ -1,37 +1,52 @@
 <?php
 /**
  * Created for plugin-component-db
- * Datetime: 06.02.2020 15:53
+ * Datetime: 07.02.2020 17:14
  * @author Timur Kasumov aka XAKEPEHOK
  */
 
 namespace Leadvertex\Plugin\Components\Db\Commands;
 
 
+use HaydenPierce\ClassFinder\ClassFinder;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
+use Leadvertex\Plugin\Components\Db\Model;
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
-class CreateTableCommand extends Command
+class CreateTableAutoCommand extends Command
 {
 
     public function __construct()
     {
-        parent::__construct('db:create-table');
-        $this->addArgument(
-            'table',
-            InputArgument::REQUIRED,
-            'Table will be created with passed name'
-        );
+        parent::__construct('db:create-table-auto');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var Model[] $classes */
+        $classes = ClassFinder::getClassesInNamespace(
+            'Leadvertex\Plugin',
+            ClassFinder::RECURSIVE_MODE
+        );
+
+        foreach ($classes as $class) {
+            if (is_a($class, Model::class, true)) {
+                $table = $class::tableName();
+                $output->writeln("Creating table '{$table}'");
+                $this->createTable($table);
+            }
+        }
+
+        return 0;
+    }
+
+    private function createTable(string $name)
+    {
         $db = Connector::db();
         $db->create(
-            $input->getArgument('table'),
+            $name,
             [
                 'companyId' => [
                     'INT',
@@ -68,7 +83,6 @@ class CreateTableCommand extends Command
                 'PRIMARY KEY (<companyId>, <feature>, <id>)'
             ]
         );
-        return 0;
     }
 
 }

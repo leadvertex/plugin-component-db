@@ -294,9 +294,10 @@ abstract class Model
         return $model;
     }
 
-    protected static function tableName(): string
+    public static function tableName(): string
     {
-        return array_pop(explode('\\', static::class));
+        $parts = explode('\\', static::class);
+        return end($parts);
     }
 
 }
