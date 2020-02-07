@@ -144,13 +144,13 @@ abstract class Model
                 [
                     'companyId' => $this->companyId,
                     'feature' => $this->feature,
+                    'id' => $this->id,
                     'createdAt' => $this->createdAt->getTimestamp(),
                     'updatedAt' => $this->updatedAt->getTimestamp(),
                     'tag_1' => $this->tag_1,
                     'tag_2' => $this->tag_2,
                     'tag_3' => $this->tag_3,
                     'data' => json_encode($this->data),
-                    'id' => $this->id
                 ]
             );
         } else {
