@@ -150,6 +150,7 @@ abstract class Model
                     'tag_2' => $this->tag_2,
                     'tag_3' => $this->tag_3,
                     'data' => json_encode($this->data),
+                    'id' => $this->id
                 ]
             );
         } else {
