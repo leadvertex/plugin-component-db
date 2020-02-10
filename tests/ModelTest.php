@@ -3,6 +3,8 @@
 namespace Leadvertex\Plugin\Components\Db;
 
 use Leadvertex\Plugin\Components\Db\Components\Connector;
+use Leadvertex\Plugin\Components\Db\Components\Limit;
+use Leadvertex\Plugin\Components\Db\Components\Sort;
 use Leadvertex\Plugin\Components\Db\Components\TestModelClass;
 use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
@@ -80,6 +82,40 @@ class ModelTest extends TestCase
             $this->assertInstanceOf(TestModelClass::class, $model);
             $this->assertEquals(1, $model->getCompanyId());
             $this->assertEquals(5, $model->getFeature());
+        }
+    }
+
+    public function testFindManyWithFullRequest()
+    {
+        /** @var TestModelClass[] $models */
+        $models = TestModelClass::findMany(1, [5, 3], ['testTag1'], ['testTag2', 'testTag4'], ['testTag3', 'testTag2'], new Limit(2), new Sort(Sort::BY_FEATURE, Sort::DESC));
+
+        $this->assertCount(2, $models);
+        foreach ($models as $model) {
+            $this->assertEquals(5, $model->getFeature());
+            $this->assertEquals('testTag1', $model->getTag1());
+            $this->assertContains($model->getTag2(), ['testTag2', 'testTag4']);
+            $this->assertContains($model->getTag3(), ['testTag3', 'testTag2']);
+        }
+    }
+
+    public function testFindManyWithOnlyFeature()
+    {
+        /** @var TestModelClass[] $models */
+        $models = TestModelClass::findMany(1, [3]);
+
+        $this->assertCount(1, $models);
+        $this->assertEquals(3, $models[0]->getFeature());
+    }
+
+    public function testFindManyWithOnlyOneTag()
+    {
+        /** @var TestModelClass[] $models */
+        $models = TestModelClass::findMany(1, [], [], ['testTag2', 'testTag4']);
+
+        $this->assertCount(3, $models);
+        foreach ($models as $model) {
+            $this->assertContains($model->getTag2(), ['testTag2', 'testTag4']);
         }
     }
 
