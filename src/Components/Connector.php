@@ -16,19 +16,25 @@ class Connector
     /** @var Medoo|null */
     protected static $db;
 
-    private function __construct()
-    {
+    /** @var string */
+    protected static $companyId;
 
-    }
+    private function __construct() {}
 
-    public static function init(Medoo $medoo)
+    public static function init(Medoo $medoo, string $companyId)
     {
         self::$db = $medoo;
+        self::$companyId = $companyId;
     }
 
     public static function db(): Medoo
     {
         return static::$db;
+    }
+
+    public static function companyId(): string
+    {
+        return static::$companyId;
     }
 
 }

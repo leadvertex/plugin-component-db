@@ -13,6 +13,7 @@ use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\Limit;
 use Leadvertex\Plugin\Components\Db\Components\Sort;
 use Ramsey\Uuid\Uuid;
+use RuntimeException;
 
 abstract class Model
 {
@@ -49,9 +50,9 @@ abstract class Model
 
     private static $select = ['companyId', 'feature', 'id', 'createdAt', 'updatedAt', 'tag_1', 'tag_2', 'tag_3', 'data'];
 
-    public function __construct(string $companyId, string $id = null, string $feature = '')
+    public function __construct(string $id = null, string $feature = '')
     {
-        $this->companyId = $companyId;
+        $this->companyId = Connector::companyId();
         $this->feature = $feature;
 
         $this->id = $id;
@@ -136,6 +137,7 @@ abstract class Model
 
     public function save(): bool
     {
+        self::guardCompanyId($this->getCompanyId());
         $db = Connector::db();
 
         if ($this->isNew) {
@@ -177,6 +179,8 @@ abstract class Model
 
     public function delete(): bool
     {
+        self::guardCompanyId($this->getCompanyId());
+
         if ($this->isNew) {
             return false;
         }
@@ -195,14 +199,14 @@ abstract class Model
         return true;
     }
 
-    public static function findById(string $companyId, string $id, string $feature = ''): ?self
+    public static function findById(string $id, string $feature = ''): ?self
     {
         $db = Connector::db();
         $data = $db->select(
             static::tableName(),
             self::$select,
             [
-                'companyId' => $companyId,
+                'companyId' => Connector::companyId(),
                 'feature' => $feature,
                 'id' => $id,
             ]
@@ -215,12 +219,12 @@ abstract class Model
         return static::hydrate($data[0]);
     }
 
-    public static function findByIds(string $companyId, array $ids, string $feature = ''): array
+    public static function findByIds(array $ids, string $feature = ''): array
     {
         $db = Connector::db();
 
         $where = [
-            'companyId' => $companyId,
+            'companyId' => Connector::companyId(),
             'feature' => $feature,
             'id' => $ids
         ];
@@ -237,7 +241,6 @@ abstract class Model
     }
 
     public static function findMany(
-        string $companyId,
         array $feature = [],
         array $tag_1 = [],
         array $tag_2 = [],
@@ -249,7 +252,7 @@ abstract class Model
         $db = Connector::db();
 
         $where = [
-            'companyId' => $companyId
+            'companyId' => Connector::companyId()
         ];
 
         if (!empty($feature)) {
@@ -289,8 +292,9 @@ abstract class Model
 
     protected static function hydrate($data): self
     {
+        self::guardCompanyId($data['companyId']);
+
         $model = new static(
-            $data['companyId'],
             $data['id'],
             $data['feature']
         );
@@ -310,6 +314,13 @@ abstract class Model
     {
         $parts = explode('\\', static::class);
         return end($parts);
+    }
+
+    private static function guardCompanyId(string $id)
+    {
+        if (Connector::companyId() != $id) {
+            throw new RuntimeException('Mismatch model and connector companyId');
+        }
     }
 
 }
