@@ -249,12 +249,24 @@ abstract class Model
         $db = Connector::db();
 
         $where = [
-            'companyId' => $companyId,
-            'feature' => $feature,
-            'tag_1' => $tag_1,
-            'tag_2' => $tag_2,
-            'tag_3' => $tag_3,
+            'companyId' => $companyId
         ];
+
+        if (!empty($feature)) {
+            $where['feature'] = $feature;
+        }
+
+        if (!empty($tag_1)) {
+            $where['tag_1'] = $tag_1;
+        }
+
+        if (!empty($tag_2)) {
+            $where['tag_2'] = $tag_2;
+        }
+
+        if (!empty($tag_3)) {
+            $where['tag_3'] = $tag_3;
+        }
 
         if ($limit) {
             $where['LIMIT'] = $limit->get();
