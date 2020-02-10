@@ -63,6 +63,7 @@ class ModelTest extends TestCase
         $model = TestModelClass::findById(1, $id, '3');
 
         $this->assertInstanceOf(TestModelClass::class, $model);
+        $this->assertEquals($model->getId(), $id);
         $this->assertEquals(1, $model->getCompanyId());
         $this->assertEquals(3, $model->getFeature());
     }
@@ -79,6 +80,7 @@ class ModelTest extends TestCase
         $models = TestModelClass::findByIds(1, $ids, '5');
         $this->assertCount(2, $models);
         foreach ($models as $model) {
+            $this->assertContains($model->getId(), $ids);
             $this->assertInstanceOf(TestModelClass::class, $model);
             $this->assertEquals(1, $model->getCompanyId());
             $this->assertEquals(5, $model->getFeature());
