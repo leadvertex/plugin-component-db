@@ -13,6 +13,7 @@ use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\Limit;
 use Leadvertex\Plugin\Components\Db\Components\Sort;
 use Ramsey\Uuid\Uuid;
+use ReflectionClass;
 use RuntimeException;
 
 abstract class Model
@@ -294,18 +295,20 @@ abstract class Model
     {
         self::guardCompanyId($data['companyId']);
 
-        $model = new static(
-            $data['id'],
-            $data['feature']
-        );
+        $reflection = new ReflectionClass(get_called_class());
+        $model = $reflection->newInstanceWithoutConstructor();
+        $model->isNew = false;
 
-        $model->createdAt = new DateTimeImmutable("@{$data['createdAt']}");
-        $model->updatedAt = new DateTimeImmutable("@{$data['updatedAt']}");
+        /** @var self $model */
+        $model->companyId = $data['companyId'];
+        $model->feature = $data['feature'];
+        $model->id = $data['id'];
         $model->tag_1 = $data['tag_1'];
         $model->tag_2 = $data['tag_2'];
         $model->tag_3 = $data['tag_3'];
         $model->data = json_decode($data['data'], true);
-        $model->isNew = false;
+        $model->createdAt = new DateTimeImmutable("@{$data['createdAt']}");
+        $model->updatedAt = new DateTimeImmutable("@{$data['updatedAt']}");
 
         return $model;
     }
