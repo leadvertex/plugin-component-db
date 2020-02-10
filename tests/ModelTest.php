@@ -47,12 +47,12 @@ class ModelTest extends TestCase
     public function testSetTags()
     {
         $model = new TestModelClass(1, 2, 3);
-        $model->setTag1('testTag1');
-        $model->setTag2('testTag2');
-        $model->setTag3('testTag3');
-        $this->assertEquals('testTag1', $model->getTag1());
-        $this->assertEquals('testTag2', $model->getTag2());
-        $this->assertEquals('testTag3', $model->getTag3());
+        $model->setTag_1('testTag1');
+        $model->setTag_2('testTag2');
+        $model->setTag_3('testTag3');
+        $this->assertEquals('testTag1', $model->getTag_1());
+        $this->assertEquals('testTag2', $model->getTag_2());
+        $this->assertEquals('testTag3', $model->getTag_3());
     }
 
     public function testFindById()
@@ -95,9 +95,9 @@ class ModelTest extends TestCase
         $this->assertCount(2, $models);
         foreach ($models as $model) {
             $this->assertEquals(5, $model->getFeature());
-            $this->assertEquals('testTag1', $model->getTag1());
-            $this->assertContains($model->getTag2(), ['testTag2', 'testTag4']);
-            $this->assertContains($model->getTag3(), ['testTag3', 'testTag2']);
+            $this->assertEquals('testTag1', $model->getTag_1());
+            $this->assertContains($model->getTag_2(), ['testTag2', 'testTag4']);
+            $this->assertContains($model->getTag_3(), ['testTag3', 'testTag2']);
         }
     }
 
@@ -117,7 +117,7 @@ class ModelTest extends TestCase
 
         $this->assertCount(3, $models);
         foreach ($models as $model) {
-            $this->assertContains($model->getTag2(), ['testTag2', 'testTag4']);
+            $this->assertContains($model->getTag_2(), ['testTag2', 'testTag4']);
         }
     }
 
@@ -126,9 +126,9 @@ class ModelTest extends TestCase
         $uuid = Uuid::uuid4()->toString();
 
         $model = new TestModelClass(1, $uuid, 3);
-        $model->setTag1('testTag1');
-        $model->setTag2('testTag2');
-        $model->setTag3('testTag3');
+        $model->setTag_1('testTag1');
+        $model->setTag_2('testTag2');
+        $model->setTag_3('testTag3');
         $model->dataName = 'name';
         $model->dataPhone = '89999999999';
         $model->save();
@@ -149,9 +149,9 @@ class ModelTest extends TestCase
 
         $this->assertEquals(3, $loadedModel->getFeature());
 
-        $this->assertEquals('testTag1', $loadedModel->getTag1());
-        $this->assertEquals('testTag2', $loadedModel->getTag2());
-        $this->assertEquals('testTag3', $loadedModel->getTag3());
+        $this->assertEquals('testTag1', $loadedModel->getTag_1());
+        $this->assertEquals('testTag2', $loadedModel->getTag_2());
+        $this->assertEquals('testTag3', $loadedModel->getTag_3());
 
         $this->assertEquals('name', $loadedModel->dataName);
         $this->assertEquals('89999999999', $loadedModel->dataPhone);
@@ -164,17 +164,17 @@ class ModelTest extends TestCase
         /** @var TestModelClass $model */
         $model = TestModelClass::findById(1, $id, '3');
 
-        $model->setTag1('newTag1');
-        $model->setTag2('newTag2');
-        $model->setTag3('newTag3');
+        $model->setTag_1('newTag1');
+        $model->setTag_2('newTag2');
+        $model->setTag_3('newTag3');
         $model->save();
 
         $model = TestModelClass::findById(1, $id, '3');
 
         $this->assertInstanceOf(TestModelClass::class, $model);
-        $this->assertEquals('newTag1', $model->getTag1());
-        $this->assertEquals('newTag2', $model->getTag2());
-        $this->assertEquals('newTag3', $model->getTag3());
+        $this->assertEquals('newTag1', $model->getTag_1());
+        $this->assertEquals('newTag2', $model->getTag_2());
+        $this->assertEquals('newTag3', $model->getTag_3());
 
     }
 

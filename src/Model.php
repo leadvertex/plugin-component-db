@@ -96,32 +96,32 @@ abstract class Model
         $this->updatedAt = $dateTime;
     }
 
-    public function getTag1(): string
+    public function getTag_1(): string
     {
         return $this->tag_1;
     }
 
-    public function setTag1(string $tag_1): void
+    public function setTag_1(string $tag_1): void
     {
         $this->tag_1 = $tag_1;
     }
 
-    public function getTag2(): string
+    public function getTag_2(): string
     {
         return $this->tag_2;
     }
 
-    public function setTag2(string $tag_2): void
+    public function setTag_2(string $tag_2): void
     {
         $this->tag_2 = $tag_2;
     }
 
-    public function getTag3(): string
+    public function getTag_3(): string
     {
         return $this->tag_3;
     }
 
-    public function setTag3(string $tag_3): void
+    public function setTag_3(string $tag_3): void
     {
         $this->tag_3 = $tag_3;
     }
