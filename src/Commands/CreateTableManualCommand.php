@@ -63,7 +63,6 @@ class CreateTableManualCommand extends Command
                 ],
                 'updatedAt' => [
                     'INT',
-                    'NOT NULL'
                 ],
                 'PRIMARY KEY (<companyId>, <feature>, <id>)'
             ]
