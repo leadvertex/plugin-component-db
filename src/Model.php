@@ -9,6 +9,7 @@ namespace Leadvertex\Plugin\Components\Db;
 
 
 use DateTimeImmutable;
+use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\Limit;
 use Leadvertex\Plugin\Components\Db\Components\Sort;
@@ -62,7 +63,7 @@ abstract class Model
         }
 
         $this->createdAt = new DateTimeImmutable();
-        $this->updatedAt = new DateTimeImmutable();
+        $this->updatedAt = null;
         $this->isNew = true;
     }
 
@@ -86,7 +87,7 @@ abstract class Model
         return $this->createdAt;
     }
 
-    public function getUpdatedAt(): DateTimeImmutable
+    public function getUpdatedAt(): ?DateTimeImmutable
     {
         return $this->updatedAt;
     }
@@ -131,9 +132,20 @@ abstract class Model
         return $this->data[$name] ?? null;
     }
 
-    public function __set($name, $value)
+    public function __set(string $name, $value)
     {
-        $this->data[$name] = $value;
+        if (is_scalar($value) || is_null($value)) {
+            $this->data[$name] = $value;
+            return;
+        }
+
+        if (is_array($value)) {
+            $this->recursiveArrayScan(new \RecursiveArrayIterator($value));
+            $this->data[$name] = $value;
+            return;
+        }
+
+        throw new InvalidArgumentException('todo');
     }
 
     public function save(): bool
@@ -149,7 +161,7 @@ abstract class Model
                     'feature' => $this->feature,
                     'id' => $this->id,
                     'createdAt' => $this->createdAt->getTimestamp(),
-                    'updatedAt' => $this->updatedAt->getTimestamp(),
+                    'updatedAt' => (is_null($this->updatedAt)) ? null : $this->updatedAt->getTimestamp(),
                     'tag_1' => $this->tag_1,
                     'tag_2' => $this->tag_2,
                     'tag_3' => $this->tag_3,
@@ -164,7 +176,7 @@ abstract class Model
                     'tag_2' => $this->tag_2,
                     'tag_3' => $this->tag_3,
                     'data' => json_encode($this->data),
-                    'updatedAt' => $this->updatedAt->getTimestamp(),
+                    'updatedAt' => (is_null($this->updatedAt)) ? null : $this->updatedAt->getTimestamp(),
                 ],
                 [
                     'companyId' => $this->companyId,
@@ -308,7 +320,7 @@ abstract class Model
         $model->tag_3 = $data['tag_3'];
         $model->data = json_decode($data['data'], true);
         $model->createdAt = new DateTimeImmutable("@{$data['createdAt']}");
-        $model->updatedAt = new DateTimeImmutable("@{$data['updatedAt']}");
+        $model->updatedAt = (is_null($data['updatedAt'])) ? null : new DateTimeImmutable("@{$data['updatedAt']}");
 
         return $model;
     }
@@ -323,6 +335,28 @@ abstract class Model
     {
         if (Connector::companyId() != $id) {
             throw new RuntimeException('Mismatch model and connector companyId');
+        }
+    }
+
+    private function recursiveArrayScan(\RecursiveArrayIterator $iterator)
+    {
+        while ($iterator->valid()) {
+            if (is_object($iterator->current())) {
+                throw new InvalidArgumentException('Data field accept only scalar or null values');
+            }
+
+            if (is_array($iterator->current())) {
+                $this->recursiveArrayScan($iterator->getChildren());
+                $iterator->next();
+                continue;
+            }
+
+            if (is_scalar($iterator->current()) || is_null($iterator->current())) {
+                $iterator->next();
+                continue;
+            }
+
+            throw new InvalidArgumentException('Data field accept only scalar or null values');
         }
     }
 
