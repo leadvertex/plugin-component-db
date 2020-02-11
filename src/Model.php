@@ -341,10 +341,6 @@ abstract class Model
     private function recursiveArrayScan(\RecursiveArrayIterator $iterator)
     {
         while ($iterator->valid()) {
-            if (is_object($iterator->current())) {
-                throw new InvalidArgumentException('Data field accept only scalar or null values');
-            }
-
             if (is_array($iterator->current())) {
                 $this->recursiveArrayScan($iterator->getChildren());
                 $iterator->next();
