@@ -1,6 +1,6 @@
 <?php
 
-namespace Leadvertex\Plugin\Components\Db\Components;
+namespace Test\Leadvertex\Plugin\Components\Db\Components;
 
 use Leadvertex\Plugin\Components\Db\Model;
 
