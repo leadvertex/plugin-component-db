@@ -39,11 +39,11 @@ class Sort
         ];
 
         if (!in_array($field, $by)) {
-            throw new InvalidArgumentException("Invalid sort field '{$field}'");
+            throw new InvalidArgumentException("Invalid sort field '{$field}'", 1);
         }
 
         if (!in_array($direction, [self::ASC, self::DESC])) {
-            throw new InvalidArgumentException("Invalid sort direction '{$direction}'");
+            throw new InvalidArgumentException("Invalid sort direction '{$direction}'", 2);
         }
 
         $this->sort[$field] = $direction;

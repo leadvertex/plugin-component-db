@@ -11,6 +11,7 @@ use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
+use SplObjectStorage;
 use Symfony\Component\Filesystem\Filesystem;
 use Test\Leadvertex\Plugin\Components\Db\Components\TestModelClass;
 
@@ -54,30 +55,20 @@ class ModelTest extends TestCase
         $model = new TestModelClass(2, 3);
         $model->testData = 'test';
         $model->newData = ['ololo' => ['alala']];
+        $model->nullData = ['field' => null];
         $this->assertEquals('test', $model->testData);
         $this->assertEquals(['ololo' => ['alala']], $model->newData);
+        $this->assertEquals(['field' => null], $model->nullData);
     }
 
-    public function testSetObjectModelData()
+    /**
+     * @dataProvider setInvalidDataProvider
+     */
+    public function testSetInvalidModelData($data)
     {
         $this->expectException(InvalidArgumentException::class);
         $model = new TestModelClass(2, 3);
-        $model->testData = [new TestModelClass()];
-    }
-
-    public function testSetClosureModelData()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $model = new TestModelClass(2, 3);
-        $model->testData = function() {return $this->getCompanyId();};
-    }
-
-    public function testSetRecourseModelData()
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $file = fopen(__DIR__ . '/testDB.db', 'r');
-        $model = new TestModelClass(2, 3);
-        $model->testData = [$file];
+        $model->testData = $data;
     }
 
     public function testSetTags()
@@ -94,7 +85,7 @@ class ModelTest extends TestCase
     public function testGetUndefinedDataField()
     {
         $model = new TestModelClass(2, 3);
-        $this->assertNull($model->undefinedField);
+        $this->assertNull($model->nullData);
     }
 
     public function testFindById()
@@ -108,6 +99,12 @@ class ModelTest extends TestCase
         $this->assertEquals($model->getId(), $id);
         $this->assertEquals(Connector::companyId(), $model->getCompanyId());
         $this->assertEquals(3, $model->getFeature());
+        $this->assertEquals("name", $model->nameData);
+        $this->assertEquals("89999999999", $model->phoneData);
+        $this->assertNull($model->nullData);
+        $this->assertEquals("testTag1", $model->getTag_1());
+        $this->assertEquals("testTag2", $model->getTag_2());
+        $this->assertEquals("testTag3", $model->getTag_3());
     }
 
     public function testFindByIds()
@@ -126,6 +123,8 @@ class ModelTest extends TestCase
             $this->assertInstanceOf(TestModelClass::class, $model);
             $this->assertEquals(Connector::companyId(), $model->getCompanyId());
             $this->assertEquals(5, $model->getFeature());
+            $this->assertEquals("name", $model->nameData);
+            $this->assertEquals("89999999999", $model->phoneData);
         }
     }
 
@@ -171,15 +170,15 @@ class ModelTest extends TestCase
         $model->setTag_1('testTag1');
         $model->setTag_2('testTag2');
         $model->setTag_3('testTag3');
-        $model->dataName = 'name';
-        $model->dataPhone = '89999999999';
-        $model->save();
+        $model->nameData = 'name';
+        $model->phoneData = '89999999999';
+        $this->assertTrue($model->save());
 
         $loadedModel = TestModelClass::findById($uuid, 3);
 
         $this->assertInstanceOf(TestModelClass::class, $loadedModel);
 
-        $this->assertInstanceOf(\DateTimeImmutable::class, $loadedModel->getCreatedAt());
+        $this->assertInstanceOf(DateTimeImmutable::class, $loadedModel->getCreatedAt());
         $this->assertEquals($model->getCreatedAt()->getTimestamp(), $loadedModel->getCreatedAt()->getTimestamp());
 
         $this->assertNull($loadedModel->getUpdatedAt());
@@ -194,8 +193,8 @@ class ModelTest extends TestCase
         $this->assertEquals('testTag2', $loadedModel->getTag_2());
         $this->assertEquals('testTag3', $loadedModel->getTag_3());
 
-        $this->assertEquals('name', $loadedModel->dataName);
-        $this->assertEquals('89999999999', $loadedModel->dataPhone);
+        $this->assertEquals('name', $loadedModel->nameData);
+        $this->assertEquals('89999999999', $loadedModel->phoneData);
     }
 
     public function testUpdateModel()
@@ -210,16 +209,21 @@ class ModelTest extends TestCase
         $model->setTag_2('newTag2');
         $model->setTag_3('newTag3');
         $model->setUpdatedAt($updateTime);
-        $model->save();
+        $model->nameData = "updatedName";
+        $this->assertTrue($model->save());
 
         $model = TestModelClass::findById($id, '3');
 
         $this->assertInstanceOf(TestModelClass::class, $model);
         $this->assertInstanceOf(DateTimeImmutable::class, $model->getUpdatedAt());
         $this->assertEquals($updateTime->getTimestamp(), $model->getUpdatedAt()->getTimestamp());
+        $this->assertEquals("updatedName", $model->nameData);
+        $this->assertEquals("89999999999", $model->phoneData);
         $this->assertEquals('newTag1', $model->getTag_1());
         $this->assertEquals('newTag2', $model->getTag_2());
         $this->assertEquals('newTag3', $model->getTag_3());
+        $this->assertEquals('updatedName', $model->nameData);
+        $this->assertEquals('89999999999', $model->phoneData);
 
     }
 
@@ -229,7 +233,7 @@ class ModelTest extends TestCase
 
         /** @var TestModelClass $model */
         $model = TestModelClass::findById($id, '3');
-        $model->delete();
+        $this->assertTrue($model->delete());
 
         $this->assertNull(TestModelClass::findById($id, '3'));
     }
@@ -238,6 +242,15 @@ class ModelTest extends TestCase
     {
         $model = new TestModelClass(2, 3);
         $this->assertFalse($model->delete());
+    }
+
+    public function setInvalidDataProvider()
+    {
+        return [
+            'withObject' => [new SplObjectStorage()],
+            'withClosure' => [function() {return 5;}],
+            'withRecourse' => [[fopen('php://memory', 'w+')]]
+        ];
     }
 
     public function testModelGuardCompanyId()
@@ -253,4 +266,6 @@ class ModelTest extends TestCase
         );
         $model->save();
     }
+
+
 }

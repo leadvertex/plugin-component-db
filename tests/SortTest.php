@@ -20,12 +20,14 @@ class SortTest extends TestCase
     public function testCreateSortWithInvalidField()
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionCode(1);
         new Sort('InvalidField', Sort::DESC);
     }
 
     public function testCreateSortWithInvalidDirection()
     {
         $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionCode(2);
         new Sort(Sort::BY_TAG_1, 'Equal');
     }
 }
