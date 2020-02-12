@@ -26,7 +26,7 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Leadvertex\\Plugin\\Components\\Db\\": "tests/"
+      "Test\\Leadvertex\\Plugin\\Components\\Db\\": "tests/"
     }
   },
   "require-dev": {

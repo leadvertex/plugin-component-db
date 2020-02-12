@@ -5,8 +5,9 @@
  * @author Timur Kasumov aka XAKEPEHOK
  */
 
-namespace Leadvertex\Plugin\Components\Db\Commands;
+namespace Test\Leadvertex\Plugin\Components\Db\Commands;
 
+use Leadvertex\Plugin\Components\Db\Commands\CreateTableAutoCommand;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
@@ -18,10 +19,13 @@ class CreateTableAutoCommandTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        Connector::init(new Medoo([
-            'database_type' => 'sqlite',
-            'database_file' => ':memory:'
-        ]));
+        Connector::init(
+            new Medoo([
+                'database_type' => 'sqlite',
+                'database_file' => ':memory:'
+            ]),
+            1
+        );
     }
 
     public function testExecute()
