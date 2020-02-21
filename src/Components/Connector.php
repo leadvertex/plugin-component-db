@@ -9,6 +9,7 @@ namespace Leadvertex\Plugin\Components\Db\Components;
 
 
 use Medoo\Medoo;
+use RuntimeException;
 
 class Connector
 {
@@ -21,20 +22,28 @@ class Connector
 
     private function __construct() {}
 
-    public static function init(Medoo $medoo, string $companyId)
+    public static function init(Medoo $medoo)
     {
         self::$db = $medoo;
-        self::$companyId = $companyId;
     }
 
     public static function db(): Medoo
     {
+        if (is_null(static::$db)) {
+            throw new RuntimeException('Medoo was not configured', 1000);
+        }
+
         return static::$db;
     }
 
-    public static function companyId(): string
+    public static function getCompanyId(): ?string
     {
         return static::$companyId;
+    }
+
+    public static function setCompanyId(string $companyId)
+    {
+        static::$companyId = $companyId;
     }
 
 }

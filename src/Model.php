@@ -13,7 +13,9 @@ use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\Limit;
 use Leadvertex\Plugin\Components\Db\Components\Sort;
+use Medoo\Medoo;
 use Ramsey\Uuid\Uuid;
+use RecursiveArrayIterator;
 use ReflectionClass;
 use RuntimeException;
 
@@ -54,7 +56,7 @@ abstract class Model
 
     public function __construct(string $id = null, string $feature = '')
     {
-        $this->companyId = Connector::companyId();
+        $this->companyId = Connector::getCompanyId();
         $this->feature = $feature;
 
         $this->id = $id;
@@ -140,7 +142,7 @@ abstract class Model
         }
 
         if (is_array($value)) {
-            $this->recursiveArrayScan(new \RecursiveArrayIterator($value));
+            $this->recursiveArrayScan(new RecursiveArrayIterator($value));
             $this->data[$name] = $value;
             return;
         }
@@ -151,7 +153,7 @@ abstract class Model
     public function save(): bool
     {
         self::guardCompanyId($this->getCompanyId());
-        $db = Connector::db();
+        $db = self::db();
 
         if ($this->isNew) {
             $db->insert(
@@ -198,7 +200,7 @@ abstract class Model
             return false;
         }
 
-        $db = Connector::db();
+        $db = self::db();
         $db->delete(
             static::tableName(),
             [
@@ -214,12 +216,12 @@ abstract class Model
 
     public static function findById(string $id, string $feature = ''): ?self
     {
-        $db = Connector::db();
+        $db = self::db();
         $data = $db->select(
             static::tableName(),
             self::$select,
             [
-                'companyId' => Connector::companyId(),
+                'companyId' => Connector::getCompanyId(),
                 'feature' => $feature,
                 'id' => $id,
             ]
@@ -234,10 +236,10 @@ abstract class Model
 
     public static function findByIds(array $ids, string $feature = ''): array
     {
-        $db = Connector::db();
+        $db = self::db();
 
         $where = [
-            'companyId' => Connector::companyId(),
+            'companyId' => Connector::getCompanyId(),
             'feature' => $feature,
             'id' => $ids
         ];
@@ -262,10 +264,10 @@ abstract class Model
         Sort $sort = null
     ): array
     {
-        $db = Connector::db();
+        $db = self::db();
 
         $where = [
-            'companyId' => Connector::companyId()
+            'companyId' => Connector::getCompanyId()
         ];
 
         if (!empty($feature)) {
@@ -331,14 +333,23 @@ abstract class Model
         return end($parts);
     }
 
+    private static function db(): Medoo
+    {
+        if (is_null(Connector::getCompanyId())) {
+            throw new RuntimeException('No company ID', 1001);
+        }
+
+        return Connector::db();
+    }
+
     private static function guardCompanyId(string $id)
     {
-        if (Connector::companyId() != $id) {
+        if (Connector::getCompanyId() != $id) {
             throw new RuntimeException('Mismatch model and connector companyId');
         }
     }
 
-    private function recursiveArrayScan(\RecursiveArrayIterator $iterator)
+    private function recursiveArrayScan(RecursiveArrayIterator $iterator)
     {
         while ($iterator->valid()) {
             if (is_array($iterator->current())) {

@@ -29,15 +29,16 @@ class ModelTest extends TestCase
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => __DIR__ . '/testDB.db'
-            ]),
-            1
+            ])
         );
+
+        Connector::setCompanyId(1);
     }
 
     public function testCreateModel()
     {
         $model = new TestModelClass(2, 3);
-        $this->assertEquals(Connector::companyId(), $model->getCompanyId());
+        $this->assertEquals(Connector::getCompanyId(), $model->getCompanyId());
         $this->assertEquals(2, $model->getId());
         $this->assertEquals(3, $model->getFeature());
     }
@@ -45,7 +46,7 @@ class ModelTest extends TestCase
     public function testCreateModelWithNullId()
     {
         $model = new TestModelClass(null, 3);
-        $this->assertEquals(Connector::companyId(), $model->getCompanyId());
+        $this->assertEquals(Connector::getCompanyId(), $model->getCompanyId());
         $this->assertNotNull($model->getId());
         $this->assertEquals(3, $model->getFeature());
     }
@@ -97,7 +98,7 @@ class ModelTest extends TestCase
 
         $this->assertInstanceOf(TestModelClass::class, $model);
         $this->assertEquals($model->getId(), $id);
-        $this->assertEquals(Connector::companyId(), $model->getCompanyId());
+        $this->assertEquals(Connector::getCompanyId(), $model->getCompanyId());
         $this->assertEquals(3, $model->getFeature());
         $this->assertEquals("name", $model->nameData);
         $this->assertEquals("89999999999", $model->phoneData);
@@ -121,7 +122,7 @@ class ModelTest extends TestCase
         foreach ($models as $model) {
             $this->assertContains($model->getId(), $ids);
             $this->assertInstanceOf(TestModelClass::class, $model);
-            $this->assertEquals(Connector::companyId(), $model->getCompanyId());
+            $this->assertEquals(Connector::getCompanyId(), $model->getCompanyId());
             $this->assertEquals(5, $model->getFeature());
             $this->assertEquals("name", $model->nameData);
             $this->assertEquals("89999999999", $model->phoneData);
@@ -183,7 +184,7 @@ class ModelTest extends TestCase
 
         $this->assertNull($loadedModel->getUpdatedAt());
 
-        $this->assertEquals(Connector::companyId(), $loadedModel->getCompanyId());
+        $this->assertEquals(Connector::getCompanyId(), $loadedModel->getCompanyId());
 
         $this->assertEquals($uuid, $loadedModel->getId());
 
@@ -257,13 +258,7 @@ class ModelTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $model = new TestModelClass(2, 3);
-        Connector::init(
-            new Medoo([
-                'database_type' => 'sqlite',
-                'database_file' => __DIR__ . '/testDB.db'
-            ]),
-            2
-        );
+        Connector::setCompanyId(2);
         $model->save();
     }
 
