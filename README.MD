@@ -25,7 +25,7 @@ class CustomModel extends Model
     }
 }
 ```
-Note, that you can change table name for this model to your desirable variant by overriding tableName() method.
+Note, that you can change table name for this model to your desirable variant by overriding `tableName()` method.
 
 Then you need to initialize static `\Leadvertex\Plugin\Components\Db\Components\Connector` using `Connector::init()`
 which accepts an instance of Medoo and company id.\
@@ -62,7 +62,7 @@ To get this values from the model use `getId()` and `getFeature()` methods.
 - `tag_3` - `string` tag #3 for record.
 
 You can use them to easily search all models with required tags.\
-To set or get these properties you need to use getTag_№() and setTag_№() where № is a number of desired tag. 
+To set or get these properties you need to use `getTag_№()` and `setTag_№()` where № is a number of desired tag. 
 
 - `data` - an array of variable fields, that you can modify as you want. You can use all values that you want, except this types:
     - `resource`
