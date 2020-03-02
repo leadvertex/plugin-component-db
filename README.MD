@@ -101,7 +101,7 @@ $models = CustomModelClass::findMany([$feature], [$tag_1, 'myTag'], (array) $tag
 ```
 
 ### Saving models to DB
-When you fill all required fields you can save the model to DB by calling `$model->save();` method.
+When you fill all required fields you can save the model to DB by calling `$model->save()` method.
 Also you can update model if it was previously loaded from DB with same method.
 
 ### Deleting models from DB
