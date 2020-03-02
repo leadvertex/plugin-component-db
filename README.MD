@@ -10,30 +10,68 @@ composer require leadvertex/plugin-component-db
 ```
 
 ## Usage
-For example, in your plugin app you can create a new model class like this:
+### Example
+For example, if you need a model to store options for some plugin, you can create a new model class like this:
 ```php
 <?php
 require 'vendor/autoload.php';
 
 use Leadvertex\Plugin\Components\Db\Model;
 
-class CustomModel extends Model
+class OptionsModel extends Model
 {
     public static function tableName(): string
     {
-        return "CustomTable";
+        return "OptionsTable";
     }
 }
+
+Connector::init($medoo);
+Connector::setCompanyId(1);
 ```
+
+After you created a table for model in DB you can start using a new model.
+For example if you need to store url and some token in our options model you can use it like that:
+```php
+$model = new OptionsModel($uniqid, $feature);
+
+$model->setTag_1('options');
+$model->setTag_2('myPlugin');
+$model->secretToken = $token;
+$model->requestUrl = 'https://my.plugin.test/';
+
+$model->save();
+```
+
+To load this model from a base you need to find it. Once it's done you can read, update and delete it if needed:
+```php
+$model = OptionsModel::findById($uniqid, $feature);
+
+//Read data fields
+$token = $model->secretToken;
+$url = $model->rquestUrl;
+
+//Updating a model
+$model->setTag_1('plugin_options');
+$model->setTag_3('Foo');
+$model->save();
+
+//Deleting a model
+$model->delete();
+```
+
+### Explanation
+So first of all you need to create class inherited from abstract `Model` class.
 Note, that you can change table name for this model to your desirable variant by overriding `tableName()` method.
 
 Then you need to initialize static `\Leadvertex\Plugin\Components\Db\Components\Connector` using `Connector::init()`
-which accepts an instance of Medoo and company id.\
+which accepts an instance of Medoo and then set company id with `Connector::setCompanyId()`.\
 For example you can use it like this:
 ```php
-Connector::init($medoo, $companyId);
+Connector::init($medoo);
+Connector::setCompanyId($companyId);
 ```
-Also you can get Medoo DB and company id from initialized connector using `Connector:db()` and `Connector:companyId()` methods.
+Also you can get Medoo DB and company id from initialized connector using `Connector:db()` and `Connector:getCompanyId()` methods.
 
 At this moment you need to create a new tables for models in your DB using one of the following console commands:
 
@@ -48,7 +86,7 @@ Model has a number of fixed properties that you can't modify by yourself:
 - `id` - `string` id of record in your DB. Can be `null`.
 - `feature` - `string` feature  of this record. By default has an empty `''` value.
 
-`Feature` and `id` fields basically is a part of one id of specific record.\
+`feature` and `id` fields basically is a part of one id of specific record.\
 This values can be assigned only during creation of new  instance of the model.\
 To get this values from the model use `getId()` and `getFeature()` methods.
 
