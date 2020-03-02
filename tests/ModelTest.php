@@ -3,7 +3,6 @@
 namespace Test\Leadvertex\Plugin\Components\Db;
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\Limit;
 use Leadvertex\Plugin\Components\Db\Components\Sort;
@@ -11,7 +10,6 @@ use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
-use SplObjectStorage;
 use Symfony\Component\Filesystem\Filesystem;
 use Test\Leadvertex\Plugin\Components\Db\Components\TestModelClass;
 
@@ -60,16 +58,6 @@ class ModelTest extends TestCase
         $this->assertEquals('test', $model->testData);
         $this->assertEquals(['ololo' => ['alala']], $model->newData);
         $this->assertEquals(['field' => null], $model->nullData);
-    }
-
-    /**
-     * @dataProvider setInvalidDataProvider
-     */
-    public function testSetInvalidModelData($data)
-    {
-        $this->expectException(InvalidArgumentException::class);
-        $model = new TestModelClass(2, 3);
-        $model->testData = $data;
     }
 
     public function testSetTags()
@@ -243,15 +231,6 @@ class ModelTest extends TestCase
     {
         $model = new TestModelClass(2, 3);
         $this->assertFalse($model->delete());
-    }
-
-    public function setInvalidDataProvider()
-    {
-        return [
-            'withObject' => [new SplObjectStorage()],
-            'withClosure' => [function() {return 5;}],
-            'withRecourse' => [[fopen('php://memory', 'w+')]]
-        ];
     }
 
     public function testModelGuardCompanyId()

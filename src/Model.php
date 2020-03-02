@@ -136,18 +136,7 @@ abstract class Model
 
     public function __set(string $name, $value)
     {
-        if (is_scalar($value) || is_null($value)) {
-            $this->data[$name] = $value;
-            return;
-        }
-
-        if (is_array($value)) {
-            $this->recursiveArrayScan(new RecursiveArrayIterator($value));
-            $this->data[$name] = $value;
-            return;
-        }
-
-        throw new InvalidArgumentException('todo');
+        $this->data[$name] = $value;
     }
 
     public function save(): bool
@@ -167,7 +156,7 @@ abstract class Model
                     'tag_1' => $this->tag_1,
                     'tag_2' => $this->tag_2,
                     'tag_3' => $this->tag_3,
-                    'data' => json_encode($this->data),
+                    'data' => serialize($this->data),
                 ]
             );
         } else {
@@ -177,7 +166,7 @@ abstract class Model
                     'tag_1' => $this->tag_1,
                     'tag_2' => $this->tag_2,
                     'tag_3' => $this->tag_3,
-                    'data' => json_encode($this->data),
+                    'data' => serialize($this->data),
                     'updatedAt' => (is_null($this->updatedAt)) ? null : $this->updatedAt->getTimestamp(),
                 ],
                 [
@@ -320,7 +309,7 @@ abstract class Model
         $model->tag_1 = $data['tag_1'];
         $model->tag_2 = $data['tag_2'];
         $model->tag_3 = $data['tag_3'];
-        $model->data = json_decode($data['data'], true);
+        $model->data = unserialize($data['data']);
         $model->createdAt = new DateTimeImmutable("@{$data['createdAt']}");
         $model->updatedAt = (is_null($data['updatedAt'])) ? null : new DateTimeImmutable("@{$data['updatedAt']}");
 
@@ -346,24 +335,6 @@ abstract class Model
     {
         if (Connector::getCompanyId() != $id) {
             throw new RuntimeException('Mismatch model and connector companyId');
-        }
-    }
-
-    private function recursiveArrayScan(RecursiveArrayIterator $iterator)
-    {
-        while ($iterator->valid()) {
-            if (is_array($iterator->current())) {
-                $this->recursiveArrayScan($iterator->getChildren());
-                $iterator->next();
-                continue;
-            }
-
-            if (is_scalar($iterator->current()) || is_null($iterator->current())) {
-                $iterator->next();
-                continue;
-            }
-
-            throw new InvalidArgumentException('Data field accept only scalar or null values');
         }
     }
 
