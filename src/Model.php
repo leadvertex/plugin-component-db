@@ -9,13 +9,11 @@ namespace Leadvertex\Plugin\Components\Db;
 
 
 use DateTimeImmutable;
-use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\Limit;
 use Leadvertex\Plugin\Components\Db\Components\Sort;
 use Medoo\Medoo;
 use Ramsey\Uuid\Uuid;
-use RecursiveArrayIterator;
 use ReflectionClass;
 use RuntimeException;
 
@@ -250,14 +248,17 @@ abstract class Model
         array $tag_2 = [],
         array $tag_3 = [],
         Limit $limit = null,
-        Sort $sort = null
+        Sort $sort = null,
+        bool $inCurrentCompany = true
     ): array
     {
         $db = self::db();
 
-        $where = [
-            'companyId' => Connector::getCompanyId()
-        ];
+        $where = [];
+
+        if ($inCurrentCompany) {
+            $where['companyId'] = Connector::getCompanyId();
+        }
 
         if (!empty($feature)) {
             $where['feature'] = $feature;
@@ -296,8 +297,6 @@ abstract class Model
 
     protected static function hydrate($data): self
     {
-        self::guardCompanyId($data['companyId']);
-
         $reflection = new ReflectionClass(get_called_class());
         $model = $reflection->newInstanceWithoutConstructor();
         $model->isNew = false;
