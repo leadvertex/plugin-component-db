@@ -23,8 +23,7 @@ class CreateTableAutoCommandTest extends TestCase
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'
-            ]),
-            1
+            ])
         );
     }
 

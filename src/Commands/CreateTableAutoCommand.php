@@ -32,6 +32,10 @@ class CreateTableAutoCommand extends Command
         );
 
         foreach ($classes as $class) {
+            if ($class === Model::class) {
+                continue;
+            }
+
             if (is_a($class, Model::class, true)) {
                 $table = $class::tableName();
                 $output->writeln("Creating table '{$table}'");
