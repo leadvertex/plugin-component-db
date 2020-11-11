@@ -26,8 +26,9 @@
   },
   "autoload-dev": {
     "psr-4": {
-      "Test\\Leadvertex\\Plugin\\Components\\Db\\": "tests/"
-    }
+      "Leadvertex\\Plugin\\Components\\Db\\": "tests/"
+    },
+    "classmap": ["tests/Components/TestModelClass.php"]
   },
   "require-dev": {
     "phpunit/phpunit": "^8.2",

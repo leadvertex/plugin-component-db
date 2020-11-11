@@ -1,6 +1,6 @@
 <?php
 
-namespace Test\Leadvertex\Plugin\Components\Db;
+namespace Leadvertex\Plugin\Components\Db;
 
 use DateTimeImmutable;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
@@ -11,7 +11,7 @@ use PHPUnit\Framework\TestCase;
 use Ramsey\Uuid\Uuid;
 use RuntimeException;
 use Symfony\Component\Filesystem\Filesystem;
-use Test\Leadvertex\Plugin\Components\Db\Components\TestModelClass;
+use Leadvertex\Plugin\Components\Db\Components\TestModelClass;
 
 class ModelTest extends TestCase
 {
@@ -96,6 +96,25 @@ class ModelTest extends TestCase
         $this->assertEquals("testTag3", $model->getTag_3());
     }
 
+    public function testFindByIdWithoutFeature()
+    {
+        $id = 'ddfcaefa-243c-453e-91fc-6823a5c8496e';
+
+        /** @var TestModelClass $model */
+        $model = TestModelClass::findById($id, null);
+
+        $this->assertInstanceOf(TestModelClass::class, $model);
+        $this->assertEquals($model->getId(), $id);
+        $this->assertEquals(Connector::getCompanyId(), $model->getCompanyId());
+        $this->assertEquals(3, $model->getFeature());
+        $this->assertEquals("name", $model->nameData);
+        $this->assertEquals("89999999999", $model->phoneData);
+        $this->assertNull($model->nullData);
+        $this->assertEquals("testTag1", $model->getTag_1());
+        $this->assertEquals("testTag2", $model->getTag_2());
+        $this->assertEquals("testTag3", $model->getTag_3());
+    }
+
     public function testFindByIds()
     {
         $ids = [
@@ -112,6 +131,26 @@ class ModelTest extends TestCase
             $this->assertInstanceOf(TestModelClass::class, $model);
             $this->assertEquals(Connector::getCompanyId(), $model->getCompanyId());
             $this->assertEquals(5, $model->getFeature());
+            $this->assertEquals("name", $model->nameData);
+            $this->assertEquals("89999999999", $model->phoneData);
+        }
+    }
+
+    public function testFindByIdsWithoutFeature()
+    {
+        $ids = [
+            'ddfcaefa-243c-453e-91fc-6823a5c8496e',
+            '05626728-9890-4348-bd3f-9cf7dc1b8375',
+            '0088dee9-b4cb-4e14-841f-d0cee01ba362'
+        ];
+
+        /** @var TestModelClass[] $models */
+        $models = TestModelClass::findByIds( $ids, null);
+        $this->assertCount(3, $models);
+        foreach ($models as $model) {
+            $this->assertContains($model->getId(), $ids);
+            $this->assertInstanceOf(TestModelClass::class, $model);
+            $this->assertEquals(Connector::getCompanyId(), $model->getCompanyId());
             $this->assertEquals("name", $model->nameData);
             $this->assertEquals("89999999999", $model->phoneData);
         }

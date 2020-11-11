@@ -5,9 +5,8 @@
  * @author Timur Kasumov aka XAKEPEHOK
  */
 
-namespace Test\Leadvertex\Plugin\Components\Db\Commands;
+namespace Leadvertex\Plugin\Components\Db\Commands;
 
-use Leadvertex\Plugin\Components\Db\Commands\CreateTableManualCommand;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
@@ -23,8 +22,7 @@ class CreateTableManualCommandTest extends TestCase
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'
-            ]),
-            1
+            ])
         );
     }
 

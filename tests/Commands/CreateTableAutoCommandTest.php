@@ -5,9 +5,8 @@
  * @author Timur Kasumov aka XAKEPEHOK
  */
 
-namespace Test\Leadvertex\Plugin\Components\Db\Commands;
+namespace Leadvertex\Plugin\Components\Db\Commands;
 
-use Leadvertex\Plugin\Components\Db\Commands\CreateTableAutoCommand;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;

@@ -201,17 +201,23 @@ abstract class Model
         return true;
     }
 
-    public static function findById(string $id, string $feature = ''): ?self
+    public static function findById(string $id, ?string $feature = ''): ?self
     {
+        $where = [
+            'companyId' => Connector::getCompanyId(),
+
+            'id' => $id,
+        ];
+
+        if (!is_null($feature)) {
+            $where['feature'] = $feature;
+        }
+
         $db = self::db();
         $data = $db->select(
             static::tableName(),
             self::$select,
-            [
-                'companyId' => Connector::getCompanyId(),
-                'feature' => $feature,
-                'id' => $id,
-            ]
+            $where
         );
 
         if (empty($data)) {
@@ -221,15 +227,18 @@ abstract class Model
         return static::hydrate($data[0]);
     }
 
-    public static function findByIds(array $ids, string $feature = ''): array
+    public static function findByIds(array $ids, ?string $feature = ''): array
     {
         $db = self::db();
 
         $where = [
             'companyId' => Connector::getCompanyId(),
-            'feature' => $feature,
             'id' => $ids
         ];
+
+        if (!is_null($feature)) {
+            $where['feature'] = $feature;
+        }
 
         $data = $db->select(
             static::tableName(),

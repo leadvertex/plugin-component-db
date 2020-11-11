@@ -1,7 +1,7 @@
 <?php
 
 
-namespace Test\Leadvertex\Plugin\Components\Db;
+namespace Leadvertex\Plugin\Components\Db;
 
 
 use Leadvertex\Plugin\Components\Db\Components\Limit;

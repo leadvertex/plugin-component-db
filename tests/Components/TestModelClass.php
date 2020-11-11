@@ -1,12 +1,12 @@
 <?php
 
-namespace Test\Leadvertex\Plugin\Components\Db\Components;
+namespace Leadvertex\Plugin\Components\Db\Components;
 
 use Leadvertex\Plugin\Components\Db\Model;
 
 /**
  * Class TestModelClass
- * @package Test\Leadvertex\Plugin\Components\Db\Components
+ * @package Leadvertex\Plugin\Components\Db\Components
  *
  * @property $testData
  * @property $newData
