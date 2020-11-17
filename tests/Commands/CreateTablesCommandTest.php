@@ -1,7 +1,7 @@
 <?php
 /**
  * Created for plugin-component-db
- * Datetime: 06.02.2020 16:53
+ * Datetime: 07.02.2020 17:19
  * @author Timur Kasumov aka XAKEPEHOK
  */
 
@@ -12,7 +12,7 @@ use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
 
-class CreateTableManualCommandTest extends TestCase
+class CreateTablesCommandTest extends TestCase
 {
 
     public static function setUpBeforeClass(): void
@@ -29,23 +29,9 @@ class CreateTableManualCommandTest extends TestCase
     public function testExecute()
     {
         $db = Connector::db();
-        $command = new CreateTableManualCommand();
+        $command = new CreateTablesCommand();
         $tester = new CommandTester($command);
-        $tester->execute(['table' => 'models']);
-
-        $this->assertSame(["00000", null, null], $db->error());
-
-        $db->insert('models', [
-            'companyId' => '1',
-            'feature' => '2',
-            'id' => '3',
-            'tag_1' => '4',
-            'tag_2' => '5',
-            'tag_3' => '6',
-            'data' => '7',
-            'createdAt' => '8',
-            'updatedAt' => '9',
-        ]);
+        $tester->execute([]);
 
         $this->assertSame(["00000", null, null], $db->error());
     }

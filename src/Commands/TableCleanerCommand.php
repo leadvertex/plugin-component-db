@@ -24,7 +24,7 @@ class TableCleanerCommand extends Command
             ->setName('db:cleaner')
             ->setDescription('Remove outdated records from DB')
             ->addArgument('table', InputArgument::REQUIRED, 'Table name')
-            ->addArgument('by', InputArgument::OPTIONAL, "Possible values: 'createdAt', 'updatedAt'", 'createdAt')
+            ->addArgument('by', InputArgument::REQUIRED, "timestamp (int) field name")
             ->addArgument('hours', InputArgument::OPTIONAL, 'Timeout in hours', 24)
         ;
     }
@@ -38,9 +38,7 @@ class TableCleanerCommand extends Command
         $hours = (int) $input->getArgument('hours');
 
         $data = $db->delete($table, [
-            "AND" => [
-                "{$by}[<]" => time() - ($hours * 60 * 60)
-            ]
+            "{$by}[<]" => time() - ($hours * 60 * 60),
         ]);
 
         $output->writeln("Deleted {$data->rowCount()} records from table '{$table}'");

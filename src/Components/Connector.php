@@ -14,11 +14,9 @@ use RuntimeException;
 class Connector
 {
 
-    /** @var Medoo|null */
-    protected static $db;
+    protected static ?Medoo $db;
 
-    /** @var string */
-    protected static $companyId;
+    protected static PluginReference $reference;
 
     private function __construct() {}
 
@@ -36,14 +34,24 @@ class Connector
         return static::$db;
     }
 
-    public static function getCompanyId(): ?string
+    public static function hasReference(): bool
     {
-        return static::$companyId;
+        return isset(self::$reference);
     }
 
-    public static function setCompanyId(string $companyId)
+    public static function getReference(): PluginReference
     {
-        static::$companyId = $companyId;
+        if (!isset(self::$reference)) {
+            throw new RuntimeException('Plugin reference is not configured');
+        }
+        return static::$reference;
     }
+
+    public static function setReference(PluginReference $reference)
+    {
+        static::$reference = $reference;
+    }
+
+
 
 }
