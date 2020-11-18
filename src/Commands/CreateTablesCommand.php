@@ -10,6 +10,7 @@ namespace Leadvertex\Plugin\Components\Db\Commands;
 
 use HaydenPierce\ClassFinder\ClassFinder;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
+use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
 use Leadvertex\Plugin\Components\Db\ModelInterface;
 use Leadvertex\Plugin\Components\Db\PluginModelInterface;
 use Symfony\Component\Console\Command\Command;
@@ -21,7 +22,7 @@ class CreateTablesCommand extends Command
 
     public function __construct()
     {
-        parent::__construct('db:create-table-auto');
+        parent::__construct('db:create-tables');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -40,20 +41,29 @@ class CreateTablesCommand extends Command
                 $output->writeln("Creating table '{$table}'");
 
                 $schema = $class::schema();
-                $schema['id'] = [
-                    'VARCHAR(255)',
-                    'NOT NULL'
+                unset($schema['id']);
+
+                $default = [
+                    'id' => ['VARCHAR(255)', 'NOT NULL', 'PRIMARY KEY'],
                 ];
 
-                if (is_a(static::class, PluginModelInterface::class, true)) {
-                    $schema = array_merge($schema, [
+                if (is_a($class, PluginModelInterface::class, true)) {
+                    $default = [
                         'companyId' => ['INT', 'NOT NULL'],
                         'pluginAlias' => ['VARCHAR(255)', 'NOT NULL'],
                         'pluginId' => ['INT', 'NOT NULL'],
-                    ]);
+                        'id' => ['VARCHAR(255)', 'NOT NULL'],
+                    ];
+
+                    unset($schema['companyId']);
+                    unset($schema['pluginAlias']);
+                    unset($schema['pluginId']);
+                    $schema[] = "PRIMARY KEY (<companyId>, <pluginAlias>, <pluginId>, <id>)";
                 }
 
+                $schema = array_merge($default, $schema);
                 $db->create($table, $schema);
+                DatabaseException::guard($db);
             }
         }
 

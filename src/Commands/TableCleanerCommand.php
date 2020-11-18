@@ -10,6 +10,7 @@ namespace Leadvertex\Plugin\Components\Db\Commands;
 
 
 use Leadvertex\Plugin\Components\Db\Components\Connector;
+use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -40,6 +41,8 @@ class TableCleanerCommand extends Command
         $data = $db->delete($table, [
             "{$by}[<]" => time() - ($hours * 60 * 60),
         ]);
+
+        DatabaseException::guard($db);
 
         $output->writeln("Deleted {$data->rowCount()} records from table '{$table}'");
 

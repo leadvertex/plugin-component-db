@@ -10,10 +10,10 @@ namespace Leadvertex\Plugin\Components\Db;
 
 use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
+use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
 use Medoo\Medoo;
 use ReflectionClass;
 use ReflectionException;
-use RuntimeException;
 
 trait ModelTrait
 {
@@ -69,6 +69,8 @@ trait ModelTrait
 
             $db->update(static::tableName(), $data, $where);
         }
+
+        DatabaseException::guard($db);
     }
 
     public function delete(): void
@@ -84,6 +86,7 @@ trait ModelTrait
         }
 
         static::db()->delete(static::tableName(), $where);
+        DatabaseException::guard(static::db());
     }
 
     protected function beforeSave(bool $isNew): void
@@ -105,14 +108,13 @@ trait ModelTrait
             return null;
         }
 
-        return static::deserialize($models[$id]);
+        return $models[$id];
     }
 
     public static function findByIds(array $ids): array
     {
         return static::findByCondition([
             'id' => $ids,
-            'LIMIT' => 1,
         ]);
     }
 
@@ -121,6 +123,7 @@ trait ModelTrait
      * @param array $where
      * @return array
      * @throws ReflectionException
+     * @throws DatabaseException
      */
     public static function findByCondition(array $where): array
     {
@@ -132,16 +135,21 @@ trait ModelTrait
 
         $data = static::db()->select(
             static::tableName(),
-            ['id' => '*'],
+            '*',
             $where
         );
 
-        return array_map(function (array $data) {
-            $model = static::deserialize($data);
+        DatabaseException::guard(static::db());
+
+        $models = [];
+        foreach ($data as $item) {
+            $model = static::deserialize($item);
             $model->_isNew = false;
             $model->afterFind();
-            return $model;
-        }, $data);
+            $models[$item['id']] = $model;
+        }
+
+        return $models;
     }
 
     public static function tableName(): string
@@ -171,10 +179,16 @@ trait ModelTrait
         $fields = array_keys(
             array_filter(static::schema(), fn($value) => is_array($value))
         );
+        $fields[] = 'id';
 
         $data = [];
         foreach ($fields as $field) {
-            $value = $model->{$field};
+
+            if ($field === 'id' && $model instanceof SinglePluginModelInterface) {
+                $value = Connector::getReference()->getId();
+            } else {
+                $value = $model->{$field};
+            }
 
             if (is_array($value)) {
                 $value = json_encode($value);
@@ -207,11 +221,11 @@ trait ModelTrait
      */
     protected static function deserialize(array $data): self
     {
-        $hashParts = ['id'];
+        $hashParts = [$data['id']];
         if (is_a(static::class, PluginModelInterface::class, true)) {
-            $hashParts[] = 'companyId';
-            $hashParts[] = 'pluginAlias';
-            $hashParts[] = 'pluginId';
+            $hashParts[] = $data['companyId'];
+            $hashParts[] = $data['pluginAlias'];
+            $hashParts[] = $data['pluginId'];
         }
 
         $hash = md5(implode('--', $hashParts));
@@ -222,6 +236,7 @@ trait ModelTrait
         $fields = array_keys(
             array_filter(static::schema(), fn($value) => is_array($value))
         );
+        $fields[] = 'id';
 
         $class = static::class;
         $reflection = new ReflectionClass($class);
@@ -239,10 +254,6 @@ trait ModelTrait
 
     protected static function db(): Medoo
     {
-        if (is_null(Connector::getReference())) {
-            throw new RuntimeException('No company ID', 1001);
-        }
-
         return Connector::db();
     }
 

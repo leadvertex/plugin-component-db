@@ -8,20 +8,14 @@
 namespace Leadvertex\Plugin\Components\Db\Components;
 
 
-use Leadvertex\Plugin\Components\Db\ModelInterface;
 use Leadvertex\Plugin\Components\Db\ModelTrait;
+use Leadvertex\Plugin\Components\Db\SinglePluginModelInterface;
+use Leadvertex\Plugin\Components\Db\SinglePluginModelTrait;
 
-class TestModelClass implements ModelInterface
+class TestSinglePluginModelClass implements SinglePluginModelInterface
 {
 
-    use ModelTrait;
-
-    public int $value_1;
-
-    public function setId(string $id): void
-    {
-        $this->id = $id;
-    }
+    use ModelTrait, SinglePluginModelTrait;
 
     public static function schema(): array
     {

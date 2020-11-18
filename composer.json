@@ -28,7 +28,11 @@
     "psr-4": {
       "Leadvertex\\Plugin\\Components\\Db\\": "tests/"
     },
-    "classmap": ["tests/Components/TestModelClass.php"]
+    "classmap": [
+      "tests/Components/TestModelClass.php",
+      "tests/Components/TestPluginModelClass.php",
+      "tests/Components/TestSinglePluginModelClass.php"
+    ]
   },
   "require-dev": {
     "phpunit/phpunit": "^9.0",

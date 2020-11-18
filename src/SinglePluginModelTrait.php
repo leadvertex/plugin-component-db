@@ -14,6 +14,4 @@ trait SinglePluginModelTrait
         return static::findById(Connector::getReference()->getId());
     }
 
-    abstract public static function findById(string $id): ?self;
-
 }
