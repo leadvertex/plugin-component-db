@@ -18,6 +18,8 @@ class TestModelClass implements ModelInterface
 
     public int $value_1;
 
+    public string $value_2;
+
     public function setId(string $id): void
     {
         $this->id = $id;

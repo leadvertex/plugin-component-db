@@ -17,6 +17,10 @@ class TestSinglePluginModelClass implements SinglePluginModelInterface
 
     use ModelTrait, SinglePluginModelTrait;
 
+    public int $value_1;
+
+    public string $value_2;
+
     public static function schema(): array
     {
         return [

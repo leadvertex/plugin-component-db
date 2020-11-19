@@ -16,6 +16,10 @@ class TestPluginModelClass implements PluginModelInterface
 
     use ModelTrait;
 
+    public int $value_1;
+
+    public string $value_2;
+
     /**
      * @param string $id
      */

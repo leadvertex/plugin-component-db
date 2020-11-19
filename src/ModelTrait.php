@@ -20,8 +20,6 @@ trait ModelTrait
 
     protected string $id;
 
-    private array $_data = [];
-
     private bool $_isNew = true;
 
     private static array $_loaded = [];
@@ -29,16 +27,6 @@ trait ModelTrait
     public function getId(): string
     {
         return $this->id;
-    }
-
-    public function __get($name)
-    {
-        return $this->_data[$name] ?? null;
-    }
-
-    public function __set(string $name, $value)
-    {
-        $this->_data[$name] = $value;
     }
 
     public function save(): void
