@@ -158,6 +158,16 @@ trait ModelTrait
      */
     abstract public static function schema(): array;
 
+    protected static function beforeDeserialize(array $data): array
+    {
+        return $data;
+    }
+
+    protected static function afterSerialize(array $data): array
+    {
+        return $data;
+    }
+
     /**
      * @param ModelInterface|PluginModelInterface|SinglePluginModelInterface|ModelTrait $model
      * @return array
@@ -189,6 +199,8 @@ trait ModelTrait
             $data[$field] = $value;
         }
 
+        $data = self::afterSerialize($data);
+
         if (is_a(static::class, PluginModelInterface::class, true)) {
             $data['companyId'] = Connector::getReference()->getCompanyId();
             $data['pluginAlias'] = Connector::getReference()->getAlias();
@@ -209,17 +221,19 @@ trait ModelTrait
      */
     protected static function deserialize(array $data): self
     {
-        $hashParts = [$data['id']];
+        $system = ['id' => $data['id']];
         if (is_a(static::class, PluginModelInterface::class, true)) {
-            $hashParts[] = $data['companyId'];
-            $hashParts[] = $data['pluginAlias'];
-            $hashParts[] = $data['pluginId'];
+            $system['companyId'] = $data['companyId'];
+            $system['pluginAlias'] = $data['pluginAlias'];
+            $system['pluginId'] = $data['pluginId'];
         }
 
-        $hash = md5(implode('--', $hashParts));
+        $hash = md5(implode('|', $system));
         if (isset(static::$_loaded[$hash])) {
             return static::$_loaded[$hash];
         }
+
+        $data = array_merge(self::beforeDeserialize($data), $system);
 
         $fields = array_keys(
             array_filter(static::schema(), fn($value) => is_array($value))
