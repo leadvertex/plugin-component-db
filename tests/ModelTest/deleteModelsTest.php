@@ -41,6 +41,7 @@ class deleteModelsTest extends TestCase
         $model->value_1 = 11;
         $model->value_2 = 'Hello world 11';
         $model->save();
+        TestPluginModelClass::freeUpMemory();
         $modelNew = new TestModelClass();
         $modelNew->setId(12);
         $modelNew->value_1 = 11;
@@ -67,6 +68,7 @@ class deleteModelsTest extends TestCase
         $model->value_1 = 11;
         $model->value_2 = 'Hello world 11';
         $model->save();
+        TestPluginModelClass::freeUpMemory();
         $modelNew = new TestPluginModelClass();
         $modelNew->setId(12);
         $modelNew->value_1 = 11;
