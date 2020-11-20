@@ -26,4 +26,18 @@ class ConnectorTest extends TestCase
         $this->assertSame($pluginReference, Connector::getReference());
     }
 
+    public function testConnectorHasReference()
+    {
+        Connector::init(
+            new Medoo([
+                'database_type' => 'sqlite',
+                'database_file' => ':memory:'
+            ])
+        );
+        $this->assertEquals(false, Connector::hasReference());
+        $pluginReference = new PluginReference(1, 'user', 2);
+        Connector::setReference($pluginReference);
+        $this->assertEquals(true, Connector::hasReference());
+    }
+
 }
