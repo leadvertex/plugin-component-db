@@ -119,7 +119,6 @@ INSERT INTO "TestPluginModelClass" ("value_1", "value_2", "id", "companyId", "pl
         $tester->execute([]);
 
         $model = new TestSinglePluginModelClass();
-        echo TestSinglePluginModelClass::tableName();
         $model->value_1 = 6;
         $model->value_2 = 'Hello world 7';
         $model->save();
