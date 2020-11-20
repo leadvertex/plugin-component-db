@@ -188,18 +188,15 @@ trait ModelTrait
                 $value = $model->{$field};
             }
 
-            if (is_array($value)) {
-                $value = json_encode($value);
-            }
-
-            if (!is_null($value) && !is_scalar($value)) {
-                throw new InvalidArgumentException("Field '{$field}' of '" . get_class($model) . "' should be scalar or null");
-            }
-
             $data[$field] = $value;
         }
 
         $data = self::afterSerialize($data);
+        foreach ($data as $field => $value) {
+            if (!is_null($value) && !is_scalar($value)) {
+                throw new InvalidArgumentException("Field '{$field}' of '" . get_class($model) . "' should be scalar or null");
+            }
+        }
 
         if (is_a(static::class, PluginModelInterface::class, true)) {
             $data['companyId'] = Connector::getReference()->getCompanyId();
