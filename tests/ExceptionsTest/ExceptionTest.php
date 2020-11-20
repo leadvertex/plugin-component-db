@@ -85,7 +85,6 @@ INSERT INTO "TestModelClass" ("value_1", "value_2", "id") VALUES (11, \'Hello wo
             $model->save();
         } catch (DatabaseException $e) {
             $result = $e->getMessage();
-            echo $result;
         }
         $expected = 'HY000: table TestModelClass has no column named value_2
 INSERT INTO "TestModelClass" ("value_1", "value_2", "id") VALUES (11, \'Hello world 11\', \'11\')';
