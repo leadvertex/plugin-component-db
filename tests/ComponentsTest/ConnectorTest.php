@@ -6,10 +6,8 @@ namespace Leadvertex\Plugin\Components\Db\ComponentsTest;
 
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\PluginReference;
-use Leadvertex\Plugin\Components\Db\ModelTrait;
 use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
-use ReflectionClass;
 
 class ConnectorTest extends TestCase
 {
