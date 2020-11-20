@@ -37,6 +37,7 @@ trait ModelTrait
         $this->beforeSave($this->_isNew);
         if ($this->_isNew) {
             $db->insert(static::tableName(), $data);
+            static::$_loaded[static::_calcHash($data)] = $this;
             $this->_isNew = false;
         } else {
             $where = [
@@ -158,6 +159,11 @@ trait ModelTrait
      */
     abstract public static function schema(): array;
 
+    public static function freeUpMemory(): void
+    {
+        static::$_loaded = [];
+    }
+
     protected static function beforeDeserialize(array $data): array
     {
         return $data;
@@ -191,7 +197,7 @@ trait ModelTrait
             $data[$field] = $value;
         }
 
-        $data = self::afterSerialize($data);
+        $data = static::afterSerialize($data);
         foreach ($data as $field => $value) {
             if (!is_null($value) && !is_scalar($value)) {
                 throw new InvalidArgumentException("Field '{$field}' of '" . get_class($model) . "' should be scalar or null");
@@ -218,6 +224,11 @@ trait ModelTrait
      */
     protected static function deserialize(array $data): self
     {
+        $hash = static::_calcHash($data);
+        if (isset(static::$_loaded[$hash])) {
+            return static::$_loaded[$hash];
+        }
+
         $system = ['id' => $data['id']];
         if (is_a(static::class, PluginModelInterface::class, true)) {
             $system['companyId'] = $data['companyId'];
@@ -225,12 +236,7 @@ trait ModelTrait
             $system['pluginId'] = $data['pluginId'];
         }
 
-        $hash = md5(implode('|', $system));
-        if (isset(static::$_loaded[$hash])) {
-            return static::$_loaded[$hash];
-        }
-
-        $data = array_merge(self::beforeDeserialize($data), $system);
+        $data = array_merge(static::beforeDeserialize($data), $system);
 
         $fields = array_keys(
             array_filter(static::schema(), fn($value) => is_array($value))
@@ -249,6 +255,22 @@ trait ModelTrait
 
         static::$_loaded[$hash] = $model;
         return $model;
+    }
+
+    private static function _calcHash(array $data): string
+    {
+        $system = [
+            'db' => spl_object_hash(static::db()),
+            'id' => $data['id']
+        ];
+
+        if (is_a(static::class, PluginModelInterface::class, true)) {
+            $system['companyId'] = $data['companyId'];
+            $system['pluginAlias'] = $data['pluginAlias'];
+            $system['pluginId'] = $data['pluginId'];
+        }
+
+        return md5(implode('|', $system));
     }
 
     protected static function db(): Medoo
