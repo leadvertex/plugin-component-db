@@ -36,11 +36,14 @@ class addModelsTest extends TestCase
         $command = new CreateTablesCommand();
         $tester = new CommandTester($command);
         $tester->execute([]);
+
         $model = new TestModelClass();
         $model->setId(11);
         $model->value_1 = 11;
         $model->value_2 = 'Hello world 11';
         $model->save();
+
+        TestModelClass::freeUpMemory();
         $result = var_export(TestModelClass::findById( 11), true);
         $expected = "Leadvertex\Plugin\Components\Db\Components\TestModelClass::__set_state(array(
    'value_1' => 11,
@@ -51,20 +54,53 @@ class addModelsTest extends TestCase
         $this->assertSame(str_replace("\r", '', $expected), $result);
     }
 
+    public function testAddTestModelClassWithNotUniqueId()
+    {
+        $command = new CreateTablesCommand();
+        $tester = new CommandTester($command);
+        $tester->execute([]);
+
+        $model = new TestModelClass();
+        $model->setId(22);
+        $model->value_1 = 22;
+        $model->value_2 = 'Hello world 22';
+        $model->save();
+
+        TestModelClass::freeUpMemory();
+        $newModel = new TestModelClass();
+        $newModel->setId(22);
+        $newModel->value_1 = 1;
+        $newModel->value_2 = 'Hello world 1';
+
+        $result = '';
+        try {
+            $newModel->save();
+        } catch (DatabaseException $e) {
+            $result = $e->getMessage();
+        }
+        $expected = '23000: UNIQUE constraint failed: TestModelClass.id
+INSERT INTO "TestModelClass" ("value_1", "value_2", "id") VALUES (1, \'Hello world 1\', \'22\')';
+        $this->assertSame(str_replace("\r", '', $expected), $result);
+    }
+
     public function testAddTestPluginModelClassWithNotUniqueId()
     {
         $command = new CreateTablesCommand();
         $tester = new CommandTester($command);
         $tester->execute([]);
+
         $model = new TestPluginModelClass();
         $model->setId(22);
         $model->value_1 = 22;
         $model->value_2 = 'Hello world 22';
         $model->save();
+
+        TestPluginModelClass::freeUpMemory();
         $newModel = new TestPluginModelClass();
         $newModel->setId(22);
         $newModel->value_1 = 1;
         $newModel->value_2 = 'Hello world 1';
+
         $result = '';
         try {
             $newModel->save();
@@ -81,13 +117,18 @@ INSERT INTO "TestPluginModelClass" ("value_1", "value_2", "id", "companyId", "pl
         $command = new CreateTablesCommand();
         $tester = new CommandTester($command);
         $tester->execute([]);
+
         $model = new TestSinglePluginModelClass();
+        echo TestSinglePluginModelClass::tableName();
         $model->value_1 = 6;
         $model->value_2 = 'Hello world 7';
         $model->save();
+
+        TestPluginModelClass::freeUpMemory();
         $newModel = new TestSinglePluginModelClass();
         $newModel->value_1 = 1;
         $newModel->value_2 = 'Hello world 1';
+
         $result = '';
         try {
             $newModel->save();
