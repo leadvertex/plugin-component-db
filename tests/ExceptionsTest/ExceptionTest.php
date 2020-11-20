@@ -70,4 +70,25 @@ INSERT INTO "TestModelClass" ("value_1", "value_2", "id") VALUES (11, \'Hello wo
         $this->assertSame(str_replace("\r", '', $expected), $result);
     }
 
+    public function testExceptionTableIncorrectScheme()
+    {
+        Connector::db()->create('TestModelClass', ['value_1' => ['INT']]);
+
+        $model = new TestModelClass();
+        $model->setId(11);
+        $model->value_1 = 11;
+        $model->value_2 = 'Hello world 11';
+
+        $result = '';
+        TestModelClass::freeUpMemory();
+        try {
+            $model->save();
+        } catch (DatabaseException $e) {
+            $result = $e->getMessage();
+            echo $result;
+        }
+        $expected = 'HY000: table TestModelClass has no column named value_2
+INSERT INTO "TestModelClass" ("value_1", "value_2", "id") VALUES (11, \'Hello world 11\', \'11\')';
+        $this->assertSame(str_replace("\r", '', $expected), $result);
+    }
 }
