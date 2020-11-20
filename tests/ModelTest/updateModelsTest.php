@@ -41,10 +41,13 @@ class updateModelsTest extends TestCase
         $model->value_1 = 11;
         $model->value_2 = 'Hello world 11';
         $model->save();
+        TestModelClass::freeUpMemory();
         $model = TestModelClass::findById( 11);
         $model->value_1 = 12;
         $model->value_2 = "new text 3";
-        $result = var_export(TestModelClass::findByCondition( ['value_2' => 'Hello world 11'])[11], true);
+        $model->save();
+        TestModelClass::freeUpMemory();
+        $result = var_export(TestModelClass::findByCondition( ['value_2' => 'new text 3'])[11], true);
         $expected = "Leadvertex\Plugin\Components\Db\Components\TestModelClass::__set_state(array(
    'value_1' => 12,
    'value_2' => 'new text 3',
@@ -64,10 +67,12 @@ class updateModelsTest extends TestCase
         $model->value_1 = 11;
         $model->value_2 = 'Hello world 11';
         $model->save();
+        TestPluginModelClass::freeUpMemory();
         $model = TestPluginModelClass::findById( 11);
         $model->value_1 = 12;
         $model->value_2 = "new text 3";
         $model->save();
+        TestPluginModelClass::freeUpMemory();
         $result = var_export(TestPluginModelClass::findById( 11), true);
         $expected = "Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
    'value_1' => 12,
@@ -92,6 +97,7 @@ class updateModelsTest extends TestCase
         $model->value_1 = 12;
         $model->value_2 = "new text 3";
         $model->save();
+        TestSinglePluginModelClass::freeUpMemory();
         $result = var_export(TestSinglePluginModelClass::find(), true);
         $expected = "Leadvertex\Plugin\Components\Db\Components\TestSinglePluginModelClass::__set_state(array(
    'value_1' => 12,
