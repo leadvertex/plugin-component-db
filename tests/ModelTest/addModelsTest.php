@@ -4,10 +4,13 @@
 namespace Leadvertex\Plugin\Components\Db\ModelTest;
 
 
+use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Commands\CreateTablesCommand;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\PluginReference;
 use Leadvertex\Plugin\Components\Db\Components\TestModelClass;
+use Leadvertex\Plugin\Components\Db\Components\TestModelWithAfterAndBeforeClass;
+use Leadvertex\Plugin\Components\Db\Components\TestModelWithArrayClass;
 use Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass;
 use Leadvertex\Plugin\Components\Db\Components\TestSinglePluginModelClass;
 use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
@@ -52,6 +55,66 @@ class addModelsTest extends TestCase
    '_isNew' => false,
 ))";
         $this->assertSame(str_replace("\r", '', $expected), $result);
+    }
+
+    public function testAddTestModelWithArrayClass()
+    {
+        $command = new CreateTablesCommand();
+        $tester = new CommandTester($command);
+        $tester->execute([]);
+
+        $model = new TestModelWithArrayClass();
+        $model->setId(11);
+        $model->value_1 = 11;
+        $model->value_2 = 'hello';
+
+        $result = '';
+        TestModelWithArrayClass::freeUpMemory();
+        try {
+            $model->save();
+        } catch (InvalidArgumentException $e) {
+            $result = $e->getMessage();
+        }
+
+        $expected = "Field 'value_2' of 'Leadvertex\Plugin\Components\Db\Components\TestModelWithArrayClass' should be scalar or null";
+        $this->assertSame(str_replace("\r", '', $expected), $result);
+    }
+
+    public function testAddTestModelClassGetId()
+    {
+        $command = new CreateTablesCommand();
+        $tester = new CommandTester($command);
+        $tester->execute([]);
+        $id = 11;
+        $model = new TestModelClass();
+        $model->setId($id);
+        $result = $model->getId();
+        $expected = $id;
+        $this->assertSame(str_replace("\r", '', $expected), $result);
+    }
+
+    public function testAddTestModelWithAfterAndBeforeClass()
+    {
+        $command = new CreateTablesCommand();
+        $tester = new CommandTester($command);
+        $tester->execute([]);
+        $id = 11;
+        $model = new TestModelWithAfterAndBeforeClass();
+        $model->setId($id);
+        $model->value_1 = 1;
+        $model->value_2 = '2';
+        $model->save();
+        $this->assertEquals('Start save', TestModelWithAfterAndBeforeClass::$message);
+        TestModelWithAfterAndBeforeClass::freeUpMemory();
+        $result = var_export(TestModelWithAfterAndBeforeClass::findById($id), true);
+        $this->assertEquals('Find complete', TestModelWithAfterAndBeforeClass::$message);
+        $expected = "Leadvertex\Plugin\Components\Db\Components\TestModelWithAfterAndBeforeClass::__set_state(array(
+   'value_1' => 1,
+   'value_2' => '2',
+   'id' => '11',
+   '_isNew' => false,
+))";
+        $this->assertEquals(str_replace("\r", '', $expected), $result);
     }
 
     public function testAddTestModelClassWithNotUniqueId()
