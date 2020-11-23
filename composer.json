@@ -31,7 +31,9 @@
     "classmap": [
       "tests/Components/TestModelClass.php",
       "tests/Components/TestPluginModelClass.php",
-      "tests/Components/TestSinglePluginModelClass.php"
+      "tests/Components/TestSinglePluginModelClass.php",
+      "tests/Components/TestModelWithArrayClass.php",
+      "tests/Components/TestModelWithAfterAndBeforeClass.php"
     ]
   },
   "require-dev": {
