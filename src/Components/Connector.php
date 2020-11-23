@@ -14,7 +14,7 @@ use RuntimeException;
 class Connector
 {
 
-    protected static ?Medoo $db;
+    protected static ?Medoo $db = null;
 
     protected static PluginReference $reference;
 
