@@ -1,0 +1,55 @@
+<?php
+
+namespace Leadvertex\Plugin\Components\Db\Components;
+
+
+use Leadvertex\Plugin\Components\Db\ModelInterface;
+use Leadvertex\Plugin\Components\Db\ModelTrait;
+
+class TestModelWithAfterAndBeforeClass implements ModelInterface
+{
+
+    use ModelTrait;
+
+    public int $value_1;
+
+    public string $value_2;
+
+    public static string $message = '';
+
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    public static function schema(): array
+    {
+        return [
+            'value_1' => ['INT'],
+            'value_2' => ['VARCHAR(255)'],
+        ];
+    }
+
+    protected static function afterSerialize(array $data): array
+    {
+        $data['value_2'] = serialize([$data['value_2'], 'new string']);
+        return $data;
+    }
+
+    protected static function beforeDeserialize(array $data): array
+    {
+        $data['value_2'] = unserialize($data['value_2'])[0];
+        return $data;
+    }
+
+    protected function beforeSave(bool $isNew): void
+    {
+        self::$message = 'Start save';
+    }
+
+    protected function afterFind(): void
+    {
+        self::$message = 'Find complete';
+    }
+
+}
