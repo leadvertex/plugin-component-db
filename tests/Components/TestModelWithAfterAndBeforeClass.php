@@ -30,13 +30,13 @@ class TestModelWithAfterAndBeforeClass implements ModelInterface
         ];
     }
 
-    protected static function afterSerialize(array $data): array
+    protected static function beforeWrite(array $data): array
     {
         $data['value_2'] = serialize([$data['value_2'], 'new string']);
         return $data;
     }
 
-    protected static function beforeDeserialize(array $data): array
+    protected static function afterRead(array $data): array
     {
         $data['value_2'] = unserialize($data['value_2'])[0];
         return $data;

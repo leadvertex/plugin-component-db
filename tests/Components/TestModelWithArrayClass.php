@@ -28,7 +28,7 @@ class TestModelWithArrayClass implements ModelInterface
         ];
     }
 
-    protected static function afterSerialize(array $data): array
+    protected static function beforeWrite(array $data): array
     {
         $data['value_2'] = [$data['value_2'], 'new string'];
         return $data;
