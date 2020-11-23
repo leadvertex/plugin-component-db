@@ -164,12 +164,12 @@ trait ModelTrait
         static::$_loaded = [];
     }
 
-    protected static function beforeDeserialize(array $data): array
+    protected static function afterRead(array $data): array
     {
         return $data;
     }
 
-    protected static function afterSerialize(array $data): array
+    protected static function beforeWrite(array $data): array
     {
         return $data;
     }
@@ -197,7 +197,7 @@ trait ModelTrait
             $data[$field] = $value;
         }
 
-        $data = static::afterSerialize($data);
+        $data = static::beforeWrite($data);
         foreach ($data as $field => $value) {
             if (!is_null($value) && !is_scalar($value)) {
                 throw new InvalidArgumentException("Field '{$field}' of '" . get_class($model) . "' should be scalar or null");
@@ -236,7 +236,7 @@ trait ModelTrait
             $system['pluginId'] = $data['pluginId'];
         }
 
-        $data = array_merge(static::beforeDeserialize($data), $system);
+        $data = array_merge(static::afterRead($data), $system);
 
         $fields = array_keys(
             array_filter(static::schema(), fn($value) => is_array($value))
