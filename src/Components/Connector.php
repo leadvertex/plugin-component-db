@@ -20,7 +20,7 @@ class Connector
 
     private function __construct() {}
 
-    public static function init(Medoo $medoo)
+    public static function init(Medoo $medoo): void
     {
         self::$db = $medoo;
     }
