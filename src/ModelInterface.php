@@ -15,6 +15,8 @@ interface ModelInterface
 
     public function delete(): void;
 
+    public function isNewModel(): bool;
+
     public static function findById(string $id): ?self;
 
     public static function findByIds(array $ids): array;

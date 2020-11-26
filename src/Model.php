@@ -79,6 +79,11 @@ abstract class Model implements ModelInterface
         DatabaseException::guard(static::db());
     }
 
+    public function isNewModel(): bool
+    {
+        return $this->_isNew;
+    }
+
     protected function beforeSave(bool $isNew): void
     {
     }
