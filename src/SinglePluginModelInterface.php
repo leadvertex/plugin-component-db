@@ -11,6 +11,6 @@ namespace Leadvertex\Plugin\Components\Db;
 interface SinglePluginModelInterface extends PluginModelInterface
 {
 
-    public static function find(): ?self;
+    public static function find(): ?Model;
 
 }
