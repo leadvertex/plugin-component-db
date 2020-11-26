@@ -9,9 +9,8 @@ namespace Leadvertex\Plugin\Components\Db\Components;
 
 
 use Leadvertex\Plugin\Components\Db\Model;
-use Leadvertex\Plugin\Components\Db\ModelInterface;
 
-class TestModelClass extends Model implements ModelInterface
+class TestModelClass extends Model
 {
     public int $value_1;
 

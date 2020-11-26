@@ -3,10 +3,9 @@
 namespace Leadvertex\Plugin\Components\Db\Components;
 
 
-use Leadvertex\Plugin\Components\Db\ModelInterface;
 use Leadvertex\Plugin\Components\Db\Model;
 
-class TestModelWithArrayClass extends Model implements ModelInterface
+class TestModelWithArrayClass extends Model
 {
     public int $value_1;
 

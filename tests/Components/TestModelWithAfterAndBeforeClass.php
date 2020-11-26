@@ -3,10 +3,9 @@
 namespace Leadvertex\Plugin\Components\Db\Components;
 
 
-use Leadvertex\Plugin\Components\Db\ModelInterface;
 use Leadvertex\Plugin\Components\Db\Model;
 
-class TestModelWithAfterAndBeforeClass extends Model implements ModelInterface
+class TestModelWithAfterAndBeforeClass extends Model
 {
     public int $value_1;
 
