@@ -1,13 +1,14 @@
 <?php
 /**
  * Created for plugin-component-db
- * Datetime: 05.02.2020 16:23
- * @author Timur Kasumov aka XAKEPEHOK
+ * Date: 26.11.2020
+ * @author Timur Kasumov (XAKEPEHOK)
  */
 
 namespace Leadvertex\Plugin\Components\Db;
 
 
+use BadMethodCallException;
 use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
@@ -15,7 +16,7 @@ use Medoo\Medoo;
 use ReflectionClass;
 use ReflectionException;
 
-trait ModelTrait
+abstract class Model implements ModelInterface
 {
 
     protected string $id;
@@ -141,6 +142,14 @@ trait ModelTrait
         return $models;
     }
 
+    public static function find(): ?Model
+    {
+        if (!is_a(static::class, SinglePluginModelInterface::class, true)) {
+            throw new BadMethodCallException('Model::find() can work only with interface ' . SinglePluginModelInterface::class);
+        }
+        return static::findById(Connector::getReference()->getId());
+    }
+
     public static function tableName(): string
     {
         $parts = explode('\\', static::class);
@@ -175,7 +184,7 @@ trait ModelTrait
     }
 
     /**
-     * @param ModelInterface|PluginModelInterface|SinglePluginModelInterface|ModelTrait $model
+     * @param Model $model
      * @return array
      */
     protected static function serialize(self $model): array
@@ -246,7 +255,7 @@ trait ModelTrait
         $class = static::class;
         $reflection = new ReflectionClass($class);
 
-        /** @var ModelInterface|PluginModelInterface|SinglePluginModelInterface|ModelTrait $model */
+        /** @var ModelInterface|PluginModelInterface|SinglePluginModelInterface|Model $model */
         $model = $reflection->newInstanceWithoutConstructor();
 
         foreach ($fields as $field) {
