@@ -8,14 +8,11 @@
 namespace Leadvertex\Plugin\Components\Db\Components;
 
 
+use Leadvertex\Plugin\Components\Db\Model;
 use Leadvertex\Plugin\Components\Db\ModelInterface;
-use Leadvertex\Plugin\Components\Db\ModelTrait;
 
-class TestModelClass implements ModelInterface
+class TestModelClass extends Model implements ModelInterface
 {
-
-    use ModelTrait;
-
     public int $value_1;
 
     public string $value_2;

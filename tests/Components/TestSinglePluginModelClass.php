@@ -8,15 +8,11 @@
 namespace Leadvertex\Plugin\Components\Db\Components;
 
 
-use Leadvertex\Plugin\Components\Db\ModelTrait;
+use Leadvertex\Plugin\Components\Db\Model;
 use Leadvertex\Plugin\Components\Db\SinglePluginModelInterface;
-use Leadvertex\Plugin\Components\Db\SinglePluginModelTrait;
 
-class TestSinglePluginModelClass implements SinglePluginModelInterface
+class TestSinglePluginModelClass extends Model implements SinglePluginModelInterface
 {
-
-    use ModelTrait, SinglePluginModelTrait;
-
     public int $value_1;
 
     public string $value_2;

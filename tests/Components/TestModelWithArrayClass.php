@@ -4,13 +4,10 @@ namespace Leadvertex\Plugin\Components\Db\Components;
 
 
 use Leadvertex\Plugin\Components\Db\ModelInterface;
-use Leadvertex\Plugin\Components\Db\ModelTrait;
+use Leadvertex\Plugin\Components\Db\Model;
 
-class TestModelWithArrayClass implements ModelInterface
+class TestModelWithArrayClass extends Model implements ModelInterface
 {
-
-    use ModelTrait;
-
     public int $value_1;
 
     public string $value_2;
