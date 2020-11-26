@@ -12,7 +12,7 @@ use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Medoo\Medoo;
 use Symfony\Component\Console\Application;
 
-Connector::init(new Medoo([
+Connector::config(new Medoo([
     'database_type' => 'sqlite',
     'database_file' => __DIR__ . '/testDB.db'
 ]));

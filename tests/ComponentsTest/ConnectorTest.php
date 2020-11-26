@@ -18,7 +18,7 @@ class ConnectorTest extends TestCase
             'database_type' => 'sqlite',
             'database_file' => ':memory:'
         ]);
-        Connector::init($medoo);
+        Connector::config($medoo);
 
         $pluginReference = new PluginReference(1, 'user', 2);
         Connector::setReference($pluginReference);
@@ -27,7 +27,7 @@ class ConnectorTest extends TestCase
 
     public function testConnectorSetReference()
     {
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'
@@ -42,7 +42,7 @@ class ConnectorTest extends TestCase
 
     public function testConnectorReferenceNotConfigured()
     {
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'
@@ -70,7 +70,7 @@ class ConnectorTest extends TestCase
 
     public function testGetReference()
     {
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'
@@ -87,7 +87,7 @@ class ConnectorTest extends TestCase
 
     public function testConnectorHasReference()
     {
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'

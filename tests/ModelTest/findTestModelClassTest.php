@@ -16,7 +16,7 @@ class findTestModelClassTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        Connector::init(new Medoo([
+        Connector::config(new Medoo([
             'database_type' => 'sqlite',
             'database_file' => __DIR__ . '/../../testDB.db'
         ]));

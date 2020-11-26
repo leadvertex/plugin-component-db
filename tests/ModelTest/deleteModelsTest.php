@@ -20,7 +20,7 @@ class deleteModelsTest extends TestCase
     protected function setUp(): void
     {
         parent::setUp();
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'

@@ -18,7 +18,7 @@ class CreateTablesCommandTest extends TestCase
     public static function setUpBeforeClass(): void
     {
         parent::setUpBeforeClass();
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'

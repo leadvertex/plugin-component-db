@@ -24,7 +24,7 @@ class addModelsTest extends TestCase
     public function setUp(): void
     {
         parent::setUpBeforeClass();
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'

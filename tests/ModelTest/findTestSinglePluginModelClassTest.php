@@ -16,7 +16,7 @@ class findTestSinglePluginModelClassTest extends TestCase
     public function setUp(): void
     {
         parent::setUp();
-        Connector::init(new Medoo([
+        Connector::config(new Medoo([
             'database_type' => 'sqlite',
             'database_file' => __DIR__ . '/../../testDB.db'
         ]));

@@ -19,7 +19,7 @@ class TableCleanerCommandTest extends TestCase
 
     public function testExecute()
     {
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'
