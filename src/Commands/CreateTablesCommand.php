@@ -11,6 +11,7 @@ namespace Leadvertex\Plugin\Components\Db\Commands;
 use HaydenPierce\ClassFinder\ClassFinder;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
+use Leadvertex\Plugin\Components\Db\Model;
 use Leadvertex\Plugin\Components\Db\ModelInterface;
 use Leadvertex\Plugin\Components\Db\PluginModelInterface;
 use Symfony\Component\Console\Command\Command;
@@ -36,7 +37,7 @@ class CreateTablesCommand extends Command
         $db = Connector::db();
         foreach ($classes as $class) {
 
-            if (is_a($class, ModelInterface::class, true)) {
+            if (is_a($class, ModelInterface::class, true) && $class !== Model::class) {
                 $table = $class::tableName();
                 $output->writeln("Creating table '{$table}'");
 
