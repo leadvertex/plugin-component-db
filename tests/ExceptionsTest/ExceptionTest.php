@@ -4,6 +4,7 @@
 namespace Leadvertex\Plugin\Components\Db\ExceptionsTest;
 
 
+use BadMethodCallException;
 use Leadvertex\Plugin\Components\Db\Commands\CreateTablesCommand;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Components\PluginReference;
@@ -18,7 +19,7 @@ class ExceptionTest extends TestCase
 
     public function setUp(): void
     {
-        Connector::init(
+        Connector::config(
             new Medoo([
                 'database_type' => 'sqlite',
                 'database_file' => ':memory:'
@@ -88,6 +89,25 @@ INSERT INTO "TestModelClass" ("value_1", "value_2", "id") VALUES (11, \'Hello wo
         }
         $expected = 'HY000: table TestModelClass has no column named value_2
 INSERT INTO "TestModelClass" ("value_1", "value_2", "id") VALUES (11, \'Hello world 11\', \'11\')';
+        $this->assertSame(str_replace("\r", '', $expected), $result);
+    }
+
+    public function testExceptionFindWorkOnlyWithSingle()
+    {
+        $command = new CreateTablesCommand();
+        $tester = new CommandTester($command);
+        $tester->execute([]);
+        $model = new TestModelClass();
+        $model->setId(11);
+        $model->value_1 = 11;
+        $model->value_2 = 'Hello world 11';
+        $model->save();
+        try {
+            $result = TestModelClass::find();
+        } catch (BadMethodCallException $e) {
+            $result = $e->getMessage();
+        }
+        $expected = 'Model::find() can work only with interface Leadvertex\Plugin\Components\Db\SinglePluginModelInterface';
         $this->assertSame(str_replace("\r", '', $expected), $result);
     }
 }
