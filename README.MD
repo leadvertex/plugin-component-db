@@ -15,3 +15,8 @@
 ### Composer
 
 `composer require leadvertex/plugin-component-db`
+
+### Использование
+
+Об использовании можно прочитать в [wiki](https://github.com/leadvertex/plugin-component-db/wiki/Usage)
+
