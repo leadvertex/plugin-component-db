@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.com/leadvertex/plugin-component-db.svg?branch=disami_test)](https://travis-ci.com/leadvertex/plugin-component-db)
+
 # Что такое plugin-component-db?
 
 `plugin-component-db` - это компонент для работы с базой данных, может использоваться при разработке плагинов для CRM Leadvertex.
