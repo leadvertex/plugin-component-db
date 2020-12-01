@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/leadvertex/plugin-component-db.svg?branch=master)](https://travis-ci.com/leadvertex/plugin-component-db)
+[![Build Status](https://travis-ci.com/leadvertex/plugin-component-db.svg)](https://travis-ci.com/leadvertex/plugin-component-db)
 
 # Что такое plugin-component-db?
 
