@@ -14,22 +14,16 @@ class tableNameTest extends TestCase
 
     public function testTableNameTestModelClass()
     {
-        $result = TestModelClass::tableName();
-        $expected = "TestModelClass";
-        $this->assertEquals($expected, $result);
+        $this->assertEquals('TestModelClass', TestModelClass::tableName());
     }
 
     public function testTableNameTestPluginModelClass()
     {
-        $result = TestPluginModelClass::tableName();
-        $expected = "TestPluginModelClass";
-        $this->assertEquals($expected, $result);
+        $this->assertEquals('TestPluginModelClass', TestPluginModelClass::tableName());
     }
 
     public function testTableNameTestSinglePluginModelClass()
     {
-        $result = TestSinglePluginModelClass::tableName();
-        $expected = "TestSinglePluginModelClass";
-        $this->assertEquals($expected, $result);
+        $this->assertEquals('TestSinglePluginModelClass', TestSinglePluginModelClass::tableName());
     }
 }
