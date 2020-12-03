@@ -9,6 +9,7 @@ use Leadvertex\Plugin\Components\Db\Components\PluginReference;
 use Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass;
 use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
+use function Symfony\Component\String\b;
 
 class findTestPluginModelClassTest extends TestCase
 {
@@ -26,179 +27,154 @@ class findTestPluginModelClassTest extends TestCase
 
     public function testFindByCondition()
     {
-        $result = var_export(TestPluginModelClass::findByCondition(['value_1' => '10']), true);
-        $expected = "array (
-  2 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 10,
-     'value_2' => 'Hello world',
-     'id' => '2',
-     '_isNew' => false,
-  )),
-  3 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 10,
-     'value_2' => 'Hello world 2',
-     'id' => '3',
-     '_isNew' => false,
-  )),
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $results = TestPluginModelClass::findByCondition(['value_1' => '10']);
+        foreach ($results as $key => $result)
+        {
+            $this->assertArrayHasKey($key, $results);
+            $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass', $result);
+            $this->assertEquals($key, $result->getId());
+            $this->assertEquals(10, $result->value_1);
+            if ($key === 3) {
+                $this->assertEquals('Hello world 2', $result->value_2);
+            } else {
+                $this->assertEquals('Hello world', $result->value_2);
+            }
+        }
     }
 
     public function testFindByConditionValue2()
     {
-        $result = var_export(TestPluginModelClass::findByCondition(['value_2' => 'Hello world']), true);
-        $expected = "array (
-  2 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 10,
-     'value_2' => 'Hello world',
-     'id' => '2',
-     '_isNew' => false,
-  )),
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $results = TestPluginModelClass::findByCondition(['value_2' => 'Hello world']);
+        foreach ($results as $key => $result) {
+            $this->assertArrayHasKey($key, $results);
+            $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass', $result);
+            $this->assertEquals($key, $result->getId());
+            $this->assertEquals(10, $result->value_1);
+            $this->assertEquals('Hello world', $result->value_2);
+        }
     }
 
     public function testFindByConditionNotFount()
     {
-        $result = var_export(TestPluginModelClass::findByCondition(['value_1' => '111']), true);
-        $expected = "array (
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $this->assertEmpty(TestPluginModelClass::findByCondition(['value_1' => '111']));
     }
 
     public function testFindByConditionTwoFilter()
     {
-        $result = var_export(TestPluginModelClass::findByCondition(['value_1' => '11', 'value_2' => 'Hello world']), true);
-        $expected = "array (
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $this->assertEmpty(TestPluginModelClass::findByCondition(['value_1' => '11', 'value_2' => 'Hello world']));
     }
 
     public function testFindByConditionEmpty()
     {
-        $result = var_export(TestPluginModelClass::findByCondition([]), true);
-        $expected = "array (
-  1 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 11,
-     'value_2' => 'Hello world 1',
-     'id' => '1',
-     '_isNew' => false,
-  )),
-  2 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 10,
-     'value_2' => 'Hello world',
-     'id' => '2',
-     '_isNew' => false,
-  )),
-  3 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 10,
-     'value_2' => 'Hello world 2',
-     'id' => '3',
-     '_isNew' => false,
-  )),
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $results = TestPluginModelClass::findByCondition([]);
+        foreach ($results as $key => $result) {
+            $this->assertArrayHasKey($key, $results);
+            $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass', $result);
+            $this->assertEquals($key, $result->getId());
+            switch ($key) {
+                case 1:
+                    $expected_1 = 11;
+                    $expected_2 = 'Hello world 1';
+                    break;
+                case 2:
+                    $expected_1 = 10;
+                    $expected_2 = 'Hello world';
+                    break;
+                case 3:
+                    $expected_1 = 10;
+                    $expected_2 = 'Hello world 2';
+                    break;
+                default:
+                    $expected_1 = '';
+                    $expected_2 = '';
+            }
+            $this->assertEquals($expected_1, $result->value_1);
+            $this->assertEquals($expected_2, $result->value_2);
+        }
     }
 
     public function testFindByConditionNull()
     {
-        $result = var_export(TestPluginModelClass::findByCondition([null]), true);
-        $expected = "array (
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $this->assertEmpty(TestPluginModelClass::findByCondition([null]));
     }
 
     public function testFindByIds()
     {
-        $result = var_export(TestPluginModelClass::findByIds([2, 1]), true);
-        $expected = "array (
-  1 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 11,
-     'value_2' => 'Hello world 1',
-     'id' => '1',
-     '_isNew' => false,
-  )),
-  2 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 10,
-     'value_2' => 'Hello world',
-     'id' => '2',
-     '_isNew' => false,
-  )),
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $results = TestPluginModelClass::findByIds([2, 1]);
+        foreach ($results as $key => $result) {
+            $this->assertArrayHasKey($key, $results);
+            $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass', $result);
+            $this->assertEquals($key, $result->getId());
+            switch ($key) {
+                case 1:
+                    $expected_1 = 11;
+                    $expected_2 = 'Hello world 1';
+                    break;
+                case 2:
+                    $expected_1 = 10;
+                    $expected_2 = 'Hello world';
+                    break;
+                default:
+                    $expected_1 = '';
+                    $expected_2 = '';
+            }
+            $this->assertEquals($expected_1, $result->value_1);
+            $this->assertEquals($expected_2, $result->value_2);
+        }
     }
 
     public function testFindByIdsWithNotExistId()
     {
-        $result = var_export(TestPluginModelClass::findByIds([2, 1, 11]), true);
-        $expected = "array (
-  1 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 11,
-     'value_2' => 'Hello world 1',
-     'id' => '1',
-     '_isNew' => false,
-  )),
-  2 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 10,
-     'value_2' => 'Hello world',
-     'id' => '2',
-     '_isNew' => false,
-  )),
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $results = TestPluginModelClass::findByIds([2, 1, 11]);
+        foreach ($results as $key => $result) {
+            $this->assertArrayHasKey($key, $results);
+            $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass', $result);
+            $this->assertEquals($key, $result->getId());
+            switch ($key) {
+                case 1:
+                    $expected_1 = 11;
+                    $expected_2 = 'Hello world 1';
+                    break;
+                case 2:
+                    $expected_1 = 10;
+                    $expected_2 = 'Hello world';
+                    break;
+                default:
+                    $expected_1 = '';
+                    $expected_2 = '';
+            }
+            $this->assertEquals($expected_1, $result->value_1);
+            $this->assertEquals($expected_2, $result->value_2);
+        }
     }
 
     public function testFindByIdsNotFound()
     {
-        $result = var_export(TestPluginModelClass::findByIds([11]), true);
-        $expected = "array (
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $this->assertEmpty(TestPluginModelClass::findByIds([11]));
     }
 
     public function testFindByIdsEmpty()
     {
-        $result = var_export(TestPluginModelClass::findByIds([]), true);
-        $expected = "array (
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $this->assertEmpty(TestPluginModelClass::findByIds([]));
     }
 
     public function testFindByIdsNull()
     {
-        $result = var_export(TestPluginModelClass::findByIds([null]), true);
-        $expected = "array (
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $this->assertEmpty(TestPluginModelClass::findByIds([null]));
     }
 
     public function testFindById()
     {
-        $result = var_export(TestPluginModelClass::findById( 1), true);
-        $expected = "Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-   'value_1' => 11,
-   'value_2' => 'Hello world 1',
-   'id' => '1',
-   '_isNew' => false,
-))";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $result = TestPluginModelClass::findById( 1);
+        $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass', $result);
+        $this->assertEquals(1, $result->getId());
+        $this->assertEquals(11, $result->value_1);
+        $this->assertEquals('Hello world 1', $result->value_2);
     }
 
     public function testFindByIdNotFound()
     {
-        $result = var_export(TestPluginModelClass::findById( 11), true);
-        $expected = 'NULL';
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $this->assertNull(TestPluginModelClass::findById( 11));
     }
 
 }
