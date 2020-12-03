@@ -21,9 +21,9 @@ abstract class Model implements ModelInterface
 
     protected string $id;
 
-    private bool $_isNew = true;
+    private bool $isNew = true;
 
-    private static array $_loaded = [];
+    private static array $loaded = [];
 
     public function getId(): string
     {
@@ -35,11 +35,11 @@ abstract class Model implements ModelInterface
         $db = static::db();
         $data = static::serialize($this);
 
-        $this->beforeSave($this->_isNew);
-        if ($this->_isNew) {
+        $this->beforeSave($this->isNew);
+        if ($this->isNew) {
             $db->insert(static::tableName(), $data);
-            static::$_loaded[static::_calcHash($data)] = $this;
-            $this->_isNew = false;
+            static::$loaded[static::calcHash($data)] = $this;
+            $this->isNew = false;
         } else {
             $where = [
                 'id' => $this->id
@@ -81,7 +81,7 @@ abstract class Model implements ModelInterface
 
     public function isNewModel(): bool
     {
-        return $this->_isNew;
+        return $this->isNew;
     }
 
     protected function beforeSave(bool $isNew): void
@@ -139,7 +139,7 @@ abstract class Model implements ModelInterface
         $models = [];
         foreach ($data as $item) {
             $model = static::deserialize($item);
-            $model->_isNew = false;
+            $model->isNew = false;
             $model->afterFind();
             $models[$item['id']] = $model;
         }
@@ -175,7 +175,7 @@ abstract class Model implements ModelInterface
 
     public static function freeUpMemory(): void
     {
-        static::$_loaded = [];
+        static::$loaded = [];
     }
 
     protected static function afterRead(array $data): array
@@ -238,9 +238,9 @@ abstract class Model implements ModelInterface
      */
     protected static function deserialize(array $data): self
     {
-        $hash = static::_calcHash($data);
-        if (isset(static::$_loaded[$hash])) {
-            return static::$_loaded[$hash];
+        $hash = static::calcHash($data);
+        if (isset(static::$loaded[$hash])) {
+            return static::$loaded[$hash];
         }
 
         $system = ['id' => $data['id']];
@@ -267,14 +267,15 @@ abstract class Model implements ModelInterface
             $model->{$field} = $data[$field];
         }
 
-        static::$_loaded[$hash] = $model;
+        static::$loaded[$hash] = $model;
         return $model;
     }
 
-    private static function _calcHash(array $data): string
+    private static function calcHash(array $data): string
     {
         $system = [
             'db' => spl_object_hash(static::db()),
+            'table' => static::tableName(),
             'id' => $data['id']
         ];
 
