@@ -23,6 +23,8 @@ abstract class Model implements ModelInterface
 
     private bool $isNew = true;
 
+    private static array $onSaveHandlers = [];
+
     private static array $loaded = [];
 
     public function getId(): string
@@ -61,6 +63,10 @@ abstract class Model implements ModelInterface
         }
 
         DatabaseException::guard($db);
+
+        foreach (static::$onSaveHandlers as $handler) {
+            $handler($this);
+        }
     }
 
     public function delete(): void
@@ -153,6 +159,16 @@ abstract class Model implements ModelInterface
             throw new BadMethodCallException('Model::find() can work only with interface ' . SinglePluginModelInterface::class);
         }
         return static::findById(Connector::getReference()->getId());
+    }
+
+    public static function addOnSaveHandler(callable $handler, string $name = null): void
+    {
+        static::$onSaveHandlers[$name ?? uniqid()] = $handler;
+    }
+
+    public static function removeOnSaveHandler(string $name): void
+    {
+        unset(static::$onSaveHandlers[$name]);
     }
 
     public static function tableName(): string
