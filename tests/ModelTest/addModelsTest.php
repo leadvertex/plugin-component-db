@@ -16,6 +16,7 @@ use Leadvertex\Plugin\Components\Db\Components\TestModelWithArrayClass;
 use Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass;
 use Leadvertex\Plugin\Components\Db\Components\TestSinglePluginModelClass;
 use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
+use Leadvertex\Plugin\Components\Db\Model;
 use Medoo\Medoo;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Console\Tester\CommandTester;
@@ -40,6 +41,14 @@ class addModelsTest extends TestCase
         $tester->execute([]);
     }
 
+    public static function tearDownAfterClass(): void
+    {
+        $filename = 'OnSaveHandler';
+        if (file_exists($filename)) {
+            unlink($filename);
+        }
+    }
+
     public function testAddTestModelClassAndFindById()
     {
         $model = new TestModelClass();
@@ -55,6 +64,57 @@ class addModelsTest extends TestCase
         $this->assertEquals(11, $result->getId());
         $this->assertEquals(11, $result->value_1);
         $this->assertEquals('Hello world 11', $result->value_2);
+    }
+
+    public function testAddTestModelClassWithAddOnSaveHandlerAndFindById()
+    {
+        $filename = 'OnSaveHandler';
+        if (file_exists($filename)) {
+            unlink($filename);
+        }
+        $model = new TestModelClass();
+        $model->setId(11);
+        $model->value_1 = 11;
+        $model->value_2 = 'Hello world 11';
+        TestModelClass::addOnSaveHandler(function () use ($filename) {
+            file_put_contents($filename, '');
+        });
+        $model->save();
+
+        TestModelClass::freeUpMemory();
+        $result = TestModelClass::findById( 11);
+
+        $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestModelClass', $result);
+        $this->assertEquals(11, $result->getId());
+        $this->assertEquals(11, $result->value_1);
+        $this->assertEquals('Hello world 11', $result->value_2);
+        $this->assertFileExists($filename);
+    }
+
+    public function testAddTestModelClassWithRemoveOnSaveHandlerAndFindById()
+    {
+        $filename = 'OnSaveHandler';
+        if (file_exists($filename)) {
+            unlink($filename);
+        }
+        $model = new TestModelClass();
+        $model->setId(12);
+        $model->value_1 = 12;
+        $model->value_2 = 'Hello world 12';
+        TestModelClass::addOnSaveHandler(function () use ($filename) {
+            file_put_contents($filename, '');
+        }, 'addFile');
+        TestModelClass::removeOnSaveHandler('addFile');
+        $model->save();
+
+        TestModelClass::freeUpMemory();
+        $result = TestModelClass::findById( 12);
+
+        $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestModelClass', $result);
+        $this->assertEquals(12, $result->getId());
+        $this->assertEquals(12, $result->value_1);
+        $this->assertEquals('Hello world 12', $result->value_2);
+        $this->assertFileDoesNotExist($filename);
     }
 
     public function testAddTestPluginModelClassAndFindById()
