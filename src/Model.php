@@ -64,7 +64,8 @@ abstract class Model implements ModelInterface
 
         DatabaseException::guard($db);
 
-        foreach (static::$onSaveHandlers as $handler) {
+        $onSaveHandlers = static::$onSaveHandlers[static::class] ?? [];
+        foreach ($onSaveHandlers as $handler) {
             $handler($this);
         }
     }
@@ -163,12 +164,12 @@ abstract class Model implements ModelInterface
 
     public static function addOnSaveHandler(callable $handler, string $name = null): void
     {
-        static::$onSaveHandlers[$name ?? uniqid()] = $handler;
+        static::$onSaveHandlers[static::class][$name ?? uniqid()] = $handler;
     }
 
     public static function removeOnSaveHandler(string $name): void
     {
-        unset(static::$onSaveHandlers[$name]);
+        unset(static::$onSaveHandlers[static::class][$name]);
     }
 
     public static function tableName(): string
