@@ -68,53 +68,73 @@ class addModelsTest extends TestCase
 
     public function testAddTestModelClassWithAddOnSaveHandlerAndFindById()
     {
-        $filename = 'OnSaveHandler';
-        if (file_exists($filename)) {
-            unlink($filename);
-        }
         $model = new TestModelClass();
         $model->setId(11);
         $model->value_1 = 11;
         $model->value_2 = 'Hello world 11';
-        TestModelClass::addOnSaveHandler(function () use ($filename) {
-            file_put_contents($filename, '');
+        $value = 11;
+        $model->value_1 = $value;
+        TestModelClass::addOnSaveHandler(function () use (&$value) {
+            $value++;
         });
         $model->save();
-
+        $model->value_1 = $value;
+        $model->save();
         TestModelClass::freeUpMemory();
         $result = TestModelClass::findById( 11);
+        $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestModelClass', $result);
+        $this->assertEquals(11, $result->getId());
+        $this->assertEquals(12, $result->value_1);
+        $this->assertEquals('Hello world 11', $result->value_2);
+        $this->assertEquals(13, $value);
+    }
 
+    public function testAddTestModelClassWithAddOnSaveHandlerOnAnotherModelAndFindById()
+    {
+        $model = new TestModelClass();
+        $model->setId(11);
+        $model->value_1 = 11;
+        $model->value_2 = 'Hello world 11';
+        $value = 11;
+        $model->value_1 = $value;
+        TestAnotherPluginModelClass::addOnSaveHandler(function () use (&$value) {
+            $value = 12;
+        });
+        $model->save();
+        TestModelClass::freeUpMemory();
+        $result = TestModelClass::findById( 11);
         $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestModelClass', $result);
         $this->assertEquals(11, $result->getId());
         $this->assertEquals(11, $result->value_1);
         $this->assertEquals('Hello world 11', $result->value_2);
-        $this->assertFileExists($filename);
+        $this->assertEquals(11, $value);
     }
 
     public function testAddTestModelClassWithRemoveOnSaveHandlerAndFindById()
     {
-        $filename = 'OnSaveHandler';
-        if (file_exists($filename)) {
-            unlink($filename);
-        }
         $model = new TestModelClass();
-        $model->setId(12);
-        $model->value_1 = 12;
-        $model->value_2 = 'Hello world 12';
-        TestModelClass::addOnSaveHandler(function () use ($filename) {
-            file_put_contents($filename, '');
-        }, 'addFile');
-        TestModelClass::removeOnSaveHandler('addFile');
+        $model->setId(11);
+        $model->value_1 = 11;
+        $model->value_2 = 'Hello world 11';
+        $value = 11;
+        $model->value_1 = $value;
+        TestModelClass::addOnSaveHandler(
+            function () use (&$value) {
+                $value++;
+            },
+            'changeValue'
+        );
         $model->save();
-
+        $model->value_1 = $value;
+        TestModelClass::removeOnSaveHandler('changeValue');
+        $model->save();
         TestModelClass::freeUpMemory();
-        $result = TestModelClass::findById( 12);
-
+        $result = TestModelClass::findById( 11);
         $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestModelClass', $result);
-        $this->assertEquals(12, $result->getId());
+        $this->assertEquals(11, $result->getId());
         $this->assertEquals(12, $result->value_1);
-        $this->assertEquals('Hello world 12', $result->value_2);
-        $this->assertFileDoesNotExist($filename);
+        $this->assertEquals('Hello world 11', $result->value_2);
+        $this->assertEquals(12, $value);
     }
 
     public function testAddTestPluginModelClassAndFindById()
