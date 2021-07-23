@@ -39,15 +39,11 @@ class isNewModelTest extends TestCase
         $model->setId($id);
         $model->value_1 = 1;
         $model->value_2 = "2";
-        $result = $model->isNewModel();
-        $expected = true;
-        $this->assertEquals($expected, $result);
+        $this->assertTrue($model->isNewModel());
         $model->save();
         TestModelClass::freeUpMemory();
         $model = TestModelClass::findById($id);
-        $result = $model->isNewModel();
-        $expected = false;
-        $this->assertEquals($expected, $result);
+        $this->assertFalse($model->isNewModel());
     }
 
     public function testIsNewModelTestPluginModelClass()
@@ -60,15 +56,11 @@ class isNewModelTest extends TestCase
         $model->setId($id);
         $model->value_1 = 1;
         $model->value_2 = "2";
-        $result = $model->isNewModel();
-        $expected = true;
-        $this->assertEquals($expected, $result);
+        $this->assertTrue($model->isNewModel());
         $model->save();
         TestPluginModelClass::freeUpMemory();
         $model = TestPluginModelClass::findById($id);
-        $result = $model->isNewModel();
-        $expected = false;
-        $this->assertEquals($expected, $result);
+        $this->assertFalse($model->isNewModel());
     }
 
     public function testIsNewModelTestSinglePluginModelClass()
@@ -79,14 +71,10 @@ class isNewModelTest extends TestCase
         $model = new TestSinglePluginModelClass();
         $model->value_1 = 1;
         $model->value_2 = "2";
-        $result = $model->isNewModel();
-        $expected = true;
-        $this->assertEquals($expected, $result);
+        $this->assertTrue($model->isNewModel());
         $model->save();
         TestSinglePluginModelClass::freeUpMemory();
         $model = TestSinglePluginModelClass::find();
-        $result = $model->isNewModel();
-        $expected = false;
-        $this->assertEquals($expected, $result);
+        $this->assertFalse($model->isNewModel());
     }
 }

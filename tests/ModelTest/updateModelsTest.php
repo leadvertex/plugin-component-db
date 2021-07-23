@@ -47,14 +47,15 @@ class updateModelsTest extends TestCase
         $model->value_2 = "new text 3";
         $model->save();
         TestModelClass::freeUpMemory();
-        $result = var_export(TestModelClass::findByCondition( ['value_2' => 'new text 3'])[11], true);
-        $expected = "Leadvertex\Plugin\Components\Db\Components\TestModelClass::__set_state(array(
-   'value_1' => 12,
-   'value_2' => 'new text 3',
-   'id' => '11',
-   '_isNew' => false,
-))";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $results = TestModelClass::findByCondition( ['value_2' => 'new text 3']);
+        $this->assertArrayHasKey(11, $results);
+        foreach ($results as $result)
+        {
+            $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestModelClass', $result);
+            $this->assertEquals(11, $result->getId());
+            $this->assertEquals(12, $result->value_1);
+            $this->assertEquals('new text 3', $result->value_2);
+        }
     }
 
     public function testUpdateTestPluginModelClassAndFindById()
@@ -73,14 +74,11 @@ class updateModelsTest extends TestCase
         $model->value_2 = "new text 3";
         $model->save();
         TestPluginModelClass::freeUpMemory();
-        $result = var_export(TestPluginModelClass::findById( 11), true);
-        $expected = "Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-   'value_1' => 12,
-   'value_2' => 'new text 3',
-   'id' => '11',
-   '_isNew' => false,
-))";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $result = TestPluginModelClass::findById( 11);
+        $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass', $result);
+        $this->assertEquals(11, $result->getId());
+        $this->assertEquals(12, $result->value_1);
+        $this->assertEquals('new text 3', $result->value_2);
     }
 
     public function testUpdateTestSinglePluginModelClassAndFindById()
@@ -98,14 +96,11 @@ class updateModelsTest extends TestCase
         $model->value_2 = "new text 3";
         $model->save();
         TestSinglePluginModelClass::freeUpMemory();
-        $result = var_export(TestSinglePluginModelClass::find(), true);
-        $expected = "Leadvertex\Plugin\Components\Db\Components\TestSinglePluginModelClass::__set_state(array(
-   'value_1' => 12,
-   'value_2' => 'new text 3',
-   'id' => '2',
-   '_isNew' => false,
-))";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $result = TestSinglePluginModelClass::find();
+        $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestSinglePluginModelClass', $result);
+        $this->assertEquals(2, $result->getId());
+        $this->assertEquals(12, $result->value_1);
+        $this->assertEquals('new text 3', $result->value_2);
     }
 
 }

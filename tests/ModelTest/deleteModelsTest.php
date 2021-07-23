@@ -48,17 +48,9 @@ class deleteModelsTest extends TestCase
         $modelNew->value_2 = 'Hello world 11';
         $modelNew->save();
         $model->delete();
-        $result = var_export(TestModelClass::findByCondition(['value_2' => 'Hello world 11']), true);
-        $expected = "array (
-  12 => 
-  Leadvertex\Plugin\Components\Db\Components\TestModelClass::__set_state(array(
-     'value_1' => 11,
-     'value_2' => 'Hello world 11',
-     'id' => '12',
-     '_isNew' => false,
-  )),
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $result = TestModelClass::findByCondition(['value_2' => 'Hello world 11']);
+        $this->assertArrayHasKey('12', $result);
+        $this->assertEquals($modelNew, $result[12]);
     }
 
     public function testDeleteTestPluginModelClass()
@@ -75,17 +67,9 @@ class deleteModelsTest extends TestCase
         $modelNew->value_2 = 'Hello world 11';
         $modelNew->save();
         $model->delete();
-        $result = var_export(TestPluginModelClass::findByCondition(['value_2' => 'Hello world 11']), true);
-        $expected = "array (
-  12 => 
-  Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass::__set_state(array(
-     'value_1' => 11,
-     'value_2' => 'Hello world 11',
-     'id' => '12',
-     '_isNew' => false,
-  )),
-)";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $result = TestPluginModelClass::findByCondition(['value_2' => 'Hello world 11']);
+        $this->assertArrayHasKey('12', $result);
+        $this->assertEquals($modelNew, $result[12]);
     }
 
     public function testDeleteTestSinglePluginModelClass()
@@ -97,9 +81,8 @@ class deleteModelsTest extends TestCase
         TestSinglePluginModelClass::freeUpMemory();
         $modelNew = TestSinglePluginModelClass::find();
         $modelNew->delete();
-        $result = var_export(TestSinglePluginModelClass::find(), true);
-        $expected = "NULL";
-        $this->assertSame(str_replace("\r", '', $expected), $result);
+        $result = TestSinglePluginModelClass::find();
+        $this->assertNull($result);
     }
 
 }
