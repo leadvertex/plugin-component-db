@@ -12,8 +12,8 @@ use BadMethodCallException;
 use InvalidArgumentException;
 use Leadvertex\Plugin\Components\Db\Components\Connector;
 use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
+use Leadvertex\Plugin\Components\Db\Helpers\ReflectionHelper;
 use Medoo\Medoo;
-use ReflectionClass;
 use ReflectionException;
 
 abstract class Model implements ModelInterface
@@ -211,21 +211,16 @@ abstract class Model implements ModelInterface
      */
     protected static function serialize(self $model): array
     {
-        $fields = array_keys(
-            array_filter(static::schema(), fn($value) => is_array($value))
-        );
-        $fields[] = 'id';
+        $fields = static::getSerializeFields();
 
         $data = [];
         foreach ($fields as $field) {
-
             if ($field === 'id' && $model instanceof SinglePluginModelInterface) {
-                $value = Connector::getReference()->getId();
-            } else {
-                $value = $model->{$field};
+                $data[$field] = Connector::getReference()->getId();
+                continue;
             }
 
-            $data[$field] = $value;
+            $data[$field] = $model->{$field};
         }
 
         $data = static::beforeWrite($data);
@@ -269,23 +264,24 @@ abstract class Model implements ModelInterface
 
         $data = array_merge(static::afterRead($data), $system);
 
-        $fields = array_keys(
-            array_filter(static::schema(), fn($value) => is_array($value))
-        );
-        $fields[] = 'id';
-
-        $class = static::class;
-        $reflection = new ReflectionClass($class);
-
         /** @var ModelInterface|PluginModelInterface|SinglePluginModelInterface|Model $model */
-        $model = $reflection->newInstanceWithoutConstructor();
+        $model = ReflectionHelper::newWithoutConstructor(static::class);
 
-        foreach ($fields as $field) {
-            $model->{$field} = $data[$field];
+        foreach ($data as $field => $value) {
+            $model->{$field} = $value;
         }
 
         static::$loaded[$hash] = $model;
         return $model;
+    }
+
+    protected static function getSerializeFields(): array
+    {
+        $fields = array_keys(
+            array_filter(static::schema(), fn($value) => is_array($value))
+        );
+        $fields[] = 'id';
+        return $fields;
     }
 
     private static function calcHash(array $data): string

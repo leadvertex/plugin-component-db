@@ -33,6 +33,7 @@
       "tests/Components/TestPluginModelClass.php",
       "tests/Components/TestSinglePluginModelClass.php",
       "tests/Components/TestModelWithArrayClass.php",
+      "tests/Components/TestModelWithSubclass.php",
       "tests/Components/TestModelWithAfterAndBeforeClass.php",
       "tests/Components/TestAnotherSinglePluginModelClass.php",
       "tests/Components/TestAnotherPluginModelClass.php"

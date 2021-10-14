@@ -13,8 +13,10 @@ use Leadvertex\Plugin\Components\Db\Components\TestAnotherSinglePluginModelClass
 use Leadvertex\Plugin\Components\Db\Components\TestModelClass;
 use Leadvertex\Plugin\Components\Db\Components\TestModelWithAfterAndBeforeClass;
 use Leadvertex\Plugin\Components\Db\Components\TestModelWithArrayClass;
+use Leadvertex\Plugin\Components\Db\Components\TestModelWithSubclass;
 use Leadvertex\Plugin\Components\Db\Components\TestPluginModelClass;
 use Leadvertex\Plugin\Components\Db\Components\TestSinglePluginModelClass;
+use Leadvertex\Plugin\Components\Db\Components\TestSubclass;
 use Leadvertex\Plugin\Components\Db\Exceptions\DatabaseException;
 use Leadvertex\Plugin\Components\Db\Model;
 use Medoo\Medoo;
@@ -213,6 +215,27 @@ class addModelsTest extends TestCase
         $this->assertEquals(11, $result->getId());
         $this->assertEquals(11, $result->value_1);
         $this->assertEquals('Hello world 11', $result->value_2);
+    }
+
+    public function testAddTestModelWithSubclass()
+    {
+        $id = 11;
+        $subclass = new TestSubclass(10, 20);
+        $model = new TestModelWithSubclass();
+        $model->setId($id);
+        $model->value_1 = 11;
+        $model->value_2 = 'Hello world 11';
+        $model->value_3 = $subclass;
+        $model->save();
+        $this->assertEquals('Start save', TestModelWithSubclass::$message);
+        TestModelWithSubclass::freeUpMemory();
+        $result = TestModelWithSubclass::findById($id);
+        $this->assertEquals('Find complete', TestModelWithSubclass::$message);
+        $this->assertInstanceOf('Leadvertex\Plugin\Components\Db\Components\TestModelWithSubclass', $result);
+        $this->assertEquals(11, $result->getId());
+        $this->assertEquals(11, $result->value_1);
+        $this->assertEquals('Hello world 11', $result->value_2);
+        $this->assertEquals($subclass, $result->value_3);
     }
 
     public function testAddTestModelClassWithNotUniqueId()
