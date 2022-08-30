@@ -190,6 +190,10 @@ abstract class Model implements ModelInterface
      */
     abstract public static function schema(): array;
 
+    public static function afterTableCreate(Medoo $db): void
+    {
+    }
+
     public static function freeUpMemory(): void
     {
         static::$loaded = [];

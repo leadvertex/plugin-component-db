@@ -8,6 +8,8 @@
 namespace Leadvertex\Plugin\Components\Db;
 
 
+use Medoo\Medoo;
+
 interface ModelInterface
 {
 
@@ -30,5 +32,12 @@ interface ModelInterface
      * @return array[]
      */
     public static function schema(): array;
+
+    /**
+     * @link https://medoo.in/api/pdo
+     * @param Medoo $db
+     * @return void
+     */
+    public static function afterTableCreate(Medoo $db): void;
 
 }

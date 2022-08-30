@@ -64,6 +64,7 @@ class CreateTablesCommand extends Command
 
                 $schema = array_merge($default, $schema);
                 $db->create($table, $schema);
+                $class::afterTableCreate($db);
                 DatabaseException::guard($db);
             }
         }
