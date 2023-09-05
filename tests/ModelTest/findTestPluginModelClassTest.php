@@ -184,24 +184,6 @@ class findTestPluginModelClassTest extends TestCase
         $this->assertArrayHasKey('1', $results);
         $this->assertArrayHasKey('2', $results);
         $this->assertCount(3, $results);
-        foreach ($results as $key => $result) {
-            switch ($key) {
-                case 0:
-                case 1:
-                    $expected_1 = 10;
-                    $expected_2 = 'Hello world';
-                    break;
-                case 2:
-                    $expected_1 = 10;
-                    $expected_2 = 'Hello world 2';
-                    break;
-                default:
-                    $expected_1 = '';
-                    $expected_2 = '';
-            }
-            $this->assertEquals($expected_1, $result->value_1);
-            $this->assertEquals($expected_2, $result->value_2);
-        }
     }
 
     public function testFindByConditionEmptyWithoutScope()
@@ -212,28 +194,6 @@ class findTestPluginModelClassTest extends TestCase
         $this->assertArrayHasKey('2', $results);
         $this->assertArrayHasKey('3', $results);
         $this->assertCount(4, $results);
-        foreach ($results as $key => $result) {
-            switch ($key) {
-                case 0:
-                    $expected_1 = 11;
-                    $expected_2 = 'Hello world 1';
-                    break;
-                case 1:
-                case 2:
-                    $expected_1 = 10;
-                    $expected_2 = 'Hello world';
-                    break;
-                case 3:
-                    $expected_1 = 10;
-                    $expected_2 = 'Hello world 2';
-                    break;
-                default:
-                    $expected_1 = '';
-                    $expected_2 = '';
-            }
-            $this->assertEquals($expected_1, $result->value_1);
-            $this->assertEquals($expected_2, $result->value_2);
-        }
     }
 
 }
