@@ -127,9 +127,9 @@ abstract class Model implements ModelInterface
      * @throws ReflectionException
      * @throws DatabaseException
      */
-    public static function findByCondition(array $where, bool $withScope = true): array
+    public static function findByCondition(array $where): array
     {
-        if ($withScope && is_a(static::class, PluginModelInterface::class, true)) {
+        if (is_a(static::class, PluginModelInterface::class, true)) {
             $where['companyId'] = Connector::getReference()->getCompanyId();
             $where['pluginAlias'] = Connector::getReference()->getAlias();
             $where['pluginId'] = Connector::getReference()->getId();
