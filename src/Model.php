@@ -148,11 +148,7 @@ abstract class Model implements ModelInterface
             $model = static::deserialize($item);
             $model->isNew = false;
             $model->afterFind();
-            if (!$withScope) {
-                $models[] = $model;
-            } else {
-                $models[$item['id']] = $model;
-            }
+            $models[$item['id']] = $model;
         }
 
         return $models;
