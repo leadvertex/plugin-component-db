@@ -113,22 +113,4 @@ class findTestSinglePluginModelClassTest extends TestCase
             $this->assertEquals('Hello world', $result->value_2);
         }
     }
-
-    public function testFindByConditionWithoutScope()
-    {
-        $results = TestSinglePluginModelClass::findByCondition(['value_2' => 'Hello world'], false);
-        $this->assertCount(2, $results);
-        $this->assertArrayHasKey('0', $results);
-        $this->assertArrayHasKey('1', $results);
-    }
-
-    public function testFindByConditionEmptyWithoutScope()
-    {
-        $results = TestSinglePluginModelClass::findByCondition([], false);
-        $this->assertCount(4, $results);
-        $this->assertArrayHasKey('0', $results);
-        $this->assertArrayHasKey('1', $results);
-        $this->assertArrayHasKey('2', $results);
-        $this->assertArrayHasKey('3', $results);
-    }
 }

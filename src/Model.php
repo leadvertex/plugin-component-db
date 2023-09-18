@@ -148,7 +148,7 @@ abstract class Model implements ModelInterface
             $model = static::deserialize($item);
             $model->isNew = false;
             $model->afterFind();
-            if (!$withScope && is_a(static::class, PluginModelInterface::class, true)) {
+            if (!$withScope) {
                 $models[] = $model;
             } else {
                 $models[$item['id']] = $model;

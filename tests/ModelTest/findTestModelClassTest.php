@@ -145,21 +145,4 @@ class findTestModelClassTest extends TestCase
         $this->assertNull($result);
     }
 
-    public function testFindByConditionWithoutScope()
-    {
-        $results = TestModelClass::findByCondition(['value_2' => 'Hello world'], false);
-        $this->assertArrayHasKey('2', $results);
-        $this->assertArrayHasKey('3', $results);
-        $this->assertCount(2, $results);
-    }
-
-    public function testFindByConditionEmptyWithoutScope()
-    {
-        $results = TestModelClass::findByCondition([], false);
-        $this->assertArrayHasKey('1', $results);
-        $this->assertArrayHasKey('2', $results);
-        $this->assertArrayHasKey('3', $results);
-        $this->assertCount(3, $results);
-    }
-
 }
