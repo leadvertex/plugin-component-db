@@ -154,6 +154,31 @@ abstract class Model implements ModelInterface
         return $models;
     }
 
+    /**
+     * WARNING! You should call this method only if you exactly know what do you do
+     * @internal
+     */
+    public static function findByConditionWithoutScope(array $where): array
+    {
+        $data = static::db()->select(
+            static::tableName(),
+            '*',
+            $where
+        );
+
+        DatabaseException::guard(static::db());
+
+        $models = [];
+        foreach ($data as $item) {
+            $model = static::deserialize($item);
+            $model->isNew = false;
+            $model->afterFind();
+            $models[] = $model;
+        }
+
+        return $models;
+    }
+
     public static function find(): ?Model
     {
         if (!is_a(static::class, SinglePluginModelInterface::class, true)) {
